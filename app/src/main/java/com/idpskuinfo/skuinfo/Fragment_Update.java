@@ -17,6 +17,8 @@ import com.idpskuinfo.skuinfo.db.CurrencyHelper;
 import com.idpskuinfo.skuinfo.db.DatabaseContract;
 import com.idpskuinfo.skuinfo.db.SkuHelper;
 import com.idpskuinfo.skuinfo.db.UpdateHelper;
+import com.idpskuinfo.skuinfo.setting.SettingModel;
+import com.idpskuinfo.skuinfo.setting.SettingPreference;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -35,6 +37,10 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
     UpdateHelper updateHelper;
     ContentValues values = new ContentValues();
     EditText edtData;
+    private String hostname,port,username,password;
+
+    private SettingModel settingModel;
+    private SettingPreference settingPreference;
 
     public Fragment_Update() {
         // Required empty public constructor
@@ -65,6 +71,9 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
 
         btnupdate = view.findViewById(R.id.btnupdate);
         btnupdate.setOnClickListener(this);
+
+        settingPreference = new SettingPreference(getContext());
+        showExistingPreference();
     }
 
     @Override
@@ -213,5 +222,22 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             Toast.makeText(getContext(), "failed add update datetime", Toast.LENGTH_SHORT).show();
         }
         //------------------------------------------------------------------------------------------
+    }
+
+    private void showExistingPreference() {
+        settingModel = settingPreference.getSetting();
+        populateView(settingModel);
+    }
+
+    private void populateView(SettingModel settingModel) {
+        hostname =settingModel.getHostName().isEmpty() ? "" : settingModel.getHostName();
+        port =settingModel.getPort().isEmpty() ? "" : settingModel.getPort();
+        username =settingModel.getUserName().isEmpty() ? "" : settingModel.getUserName();
+        password =settingModel.getPassword().isEmpty() ? "" : settingModel.getPassword();
+
+        Log.d(TAG, "HOSTNAME: "+hostname);
+        Log.d(TAG, "PORT: "+port);
+        Log.d(TAG, "USERNAME: "+username);
+        Log.d(TAG, "PASSWORD: "+password);
     }
 }

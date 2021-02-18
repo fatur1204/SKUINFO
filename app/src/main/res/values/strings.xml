@@ -7,4 +7,5 @@
     <string name="last_rate">Last Rate</string>
     <string name="last_update">Last Update</string>
     <string name="time_update">Time Update</string>
+    <string name="setting">Setting</string>
 </resources>

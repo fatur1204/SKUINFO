@@ -1,7 +1,9 @@
 package com.idpskuinfo.skuinfo;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 
 import androidx.annotation.NonNull;
@@ -11,6 +13,7 @@ import androidx.fragment.app.Fragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.idpskuinfo.skuinfo.db.CurrencyHelper;
 import com.idpskuinfo.skuinfo.db.SkuHelper;
+import com.idpskuinfo.skuinfo.setting.SettingActivity;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -75,5 +78,20 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
 
         return loadFragment(fragment);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.option_menu, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.option_setting) {
+            Intent mIntent = new Intent(MainActivity.this, SettingActivity.class);
+            startActivity(mIntent);
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
