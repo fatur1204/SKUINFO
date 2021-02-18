@@ -1,0 +1,79 @@
+package com.idpskuinfo.skuinfo;
+
+import android.os.Bundle;
+import android.util.Log;
+import android.view.MenuItem;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.idpskuinfo.skuinfo.db.CurrencyHelper;
+import com.idpskuinfo.skuinfo.db.SkuHelper;
+
+public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
+    private static final String TAG = MainActivity.class.getSimpleName();
+    private Bundle bundle = new Bundle();
+    private BottomNavigationView navigation;
+    private SkuHelper skuHelper;
+    private CurrencyHelper currencyHelper;
+
+    private boolean loadFragment(Fragment fragment) {
+        Log.d(TAG, "frag_name : " + fragment);
+        fragment.setArguments(bundle);
+        //switching fragment
+        if (fragment != null) {
+            getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.container, fragment)
+                    .commit();
+            return true;
+        }
+        return false;
+    }
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        bundle.putInt("message", 0);
+        loadFragment(new Fragment_ScanBarcode());
+
+        navigation = findViewById(R.id.navigationView);
+        navigation.setOnNavigationItemSelectedListener(this);
+
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setElevation(0);
+            getSupportActionBar().setTitle("Scan Barcode");
+        }
+
+    }
+
+    @Override
+    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+        Fragment fragment = null;
+        switch (item.getItemId()) {
+            case R.id.navigation_movies:
+                bundle.putInt("message", 0);
+                getSupportActionBar().setTitle("Scan Barcode");
+                fragment = new Fragment_ScanBarcode();
+                break;
+
+            case R.id.navigation_tvshow:
+                bundle.putInt("message", 0);
+                getSupportActionBar().setTitle("List Rate");
+                fragment = new Fragment_ListRate();
+                break;
+
+            case R.id.navigation_favorite:
+                getSupportActionBar().setTitle("Update");
+                fragment = new Fragment_Update();
+                break;
+        }
+
+
+        return loadFragment(fragment);
+    }
+}

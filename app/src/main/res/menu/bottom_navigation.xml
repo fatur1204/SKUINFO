@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/navigation_movies"
+        android:icon="@drawable/ic_scan"
+        android:color="#FFFFFF"
+        android:tint="#FFFFFF"
+        android:backgroundTint="#FFFFFF"
+        android:background="#FFFFFF"
+        android:title="Scan Barcode"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/navigation_tvshow"
+        android:icon="@drawable/ic_rate"
+        android:color="#FFFFFF"
+        android:tint="#FFFFFF"
+        android:backgroundTint="#FFFFFF"
+        android:title="Rate"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/navigation_favorite"
+        android:icon="@drawable/ic_update"
+        android:color="#FFFFFF"
+        android:tint="#FFFFFF"
+        android:backgroundTint="#FFFFFF"
+        android:title="Update"
+        app:showAsAction="ifRoom" />
+</menu>
