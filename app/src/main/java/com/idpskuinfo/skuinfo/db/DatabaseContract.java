@@ -14,6 +14,7 @@ public class DatabaseContract {
     public static String TABLE_NAME_CURINFO = "currinfo";
     public static final class CurrColumns implements BaseColumns {
         public static String CURRID = "currid";
+        public static String CURDES = "curdes";
         public static String CURRDATE = "currdate";
         public static String CUR_RET = "curret";
     }

@@ -23,9 +23,11 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     private static final String SQL_CREATE_TABLE_CURRINFO = String.format("CREATE TABLE %s"
                     + " (%s TEXT NOT NULL," +
                     " %s TEXT NOT NULL," +
+                    " %s TEXT NOT NULL," +
                     " %s TEXT NOT NULL)",
             DatabaseContract.TABLE_NAME_CURINFO,
             DatabaseContract.CurrColumns.CURRID,
+            DatabaseContract.CurrColumns.CURDES,
             DatabaseContract.CurrColumns.CURRDATE,
             DatabaseContract.CurrColumns.CUR_RET
     );

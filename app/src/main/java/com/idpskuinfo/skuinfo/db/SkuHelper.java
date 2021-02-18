@@ -33,6 +33,7 @@ public class SkuHelper {
     public void open() throws SQLException {
         database = dataBaseHelper.getWritableDatabase();
     }
+
     public void close() {
         dataBaseHelper.close();
         if (database.isOpen())
@@ -72,5 +73,9 @@ public class SkuHelper {
 
     public int deleteById(String id) {
         return database.delete(DATABASE_TABLE, DatabaseContract.NoteColumns.SKUID + " = ?", new String[]{id});
+    }
+
+    public int deleteAll() {
+        return database.delete(DATABASE_TABLE, null, null);
     }
 }
