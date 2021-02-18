@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ProgressBar;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -25,6 +26,7 @@ public class Fragment_ListRate extends Fragment implements LoadCurrencyCallback 
     private RecyclerView recyclerView;
     private List<RateInfo> rateInfoList = new ArrayList<>();
     private RateAdapter adapter;
+    private ProgressBar progressBar;
 
     public Fragment_ListRate() {
         // Required empty public constructor
@@ -50,6 +52,7 @@ public class Fragment_ListRate extends Fragment implements LoadCurrencyCallback 
         currencyHelper.open();
 
         recyclerView = view.findViewById(R.id.rv_listrate);
+        progressBar = view.findViewById(R.id.progress_bar);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
 
@@ -67,12 +70,12 @@ public class Fragment_ListRate extends Fragment implements LoadCurrencyCallback 
 
     @Override
     public void preExecute() {
-        //progressBar.setVisibility(View.VISIBLE);
+        progressBar.setVisibility(View.VISIBLE);
     }
 
     @Override
     public void postExecute(ArrayList<RateInfo> rateInfos) {
-        //progressBar.setVisibility(View.INVISIBLE);
+        progressBar.setVisibility(View.INVISIBLE);
         if (rateInfos.size() > 0) {
             adapter.setListRate(rateInfos);
         } else {
