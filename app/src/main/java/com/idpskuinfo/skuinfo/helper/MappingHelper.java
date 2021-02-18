@@ -12,8 +12,9 @@ public class MappingHelper {
         ArrayList<RateInfo> rateList = new ArrayList<>();
         while (rateCursor.moveToNext()) {
             String title = rateCursor.getString(rateCursor.getColumnIndexOrThrow(DatabaseContract.CurrColumns.CURRID));
-            String description = rateCursor.getString(rateCursor.getColumnIndexOrThrow(DatabaseContract.CurrColumns.CUR_RET));
-            rateList.add(new RateInfo(title, description));
+            String description = rateCursor.getString(rateCursor.getColumnIndexOrThrow(DatabaseContract.CurrColumns.CURDES));
+            String retail = rateCursor.getString(rateCursor.getColumnIndexOrThrow(DatabaseContract.CurrColumns.CUR_RET));
+            rateList.add(new RateInfo(title, description, retail));
         }
         return rateList;
     }

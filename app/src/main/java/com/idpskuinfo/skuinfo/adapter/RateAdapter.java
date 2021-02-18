@@ -1,6 +1,7 @@
 package com.idpskuinfo.skuinfo.adapter;
 
 import android.app.Activity;
+import android.graphics.drawable.Drawable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,9 +19,9 @@ import com.idpskuinfo.skuinfo.RateInfo;
 import java.util.ArrayList;
 
 public class RateAdapter extends RecyclerView.Adapter<RateAdapter.RateViewHolder> {
+    private static final String TAG = RateAdapter.class.getSimpleName();
     private ArrayList<RateInfo> rateInfos = new ArrayList<>();
     private Activity activity;
-    private static final String TAG = RateAdapter.class.getSimpleName();
 
     /*public RateAdapter(ArrayList<RateInfo> rateInfos) {
         this.rateInfos = rateInfos;
@@ -50,9 +51,19 @@ public class RateAdapter extends RecyclerView.Adapter<RateAdapter.RateViewHolder
     @Override
     public void onBindViewHolder(@NonNull RateViewHolder holder, int position) {
         holder.tvCurrency.setText(rateInfos.get(position).getCurrency());
-        holder.tvRateIdr.setText(rateInfos.get(position).getRateidr());
+        //holder.tvRateIdr.setText(rateInfos.get(position).getRateidr());
+
+
+        holder.tvRateIdr.setText(String.format("%,.3f", Float.valueOf(rateInfos.get(position).getRateidr())));
+
+        holder.txtCountry.setText(rateInfos.get(position).getDescription());
+        String imgdata = rateInfos.get(position).getCurrency();
+        imgdata = imgdata.toLowerCase();
+        String uri = "@drawable/" + imgdata;
+        int imageResource = activity.getResources().getIdentifier(uri, null, activity.getPackageName());
+        Drawable drawable = activity.getResources().getDrawable(imageResource);
         Glide.with(holder.itemView.getContext())
-                .load(R.drawable.rate)
+                .load(drawable)
                 .apply(new RequestOptions().override(55, 55))
                 .into(holder.imgrate);
     }
@@ -63,7 +74,7 @@ public class RateAdapter extends RecyclerView.Adapter<RateAdapter.RateViewHolder
     }
 
     public class RateViewHolder extends RecyclerView.ViewHolder {
-        TextView tvCurrency, tvRateIdr;
+        TextView tvCurrency, tvRateIdr, txtCountry;
         ImageView imgrate;
 
         public RateViewHolder(@NonNull View itemView) {
@@ -72,6 +83,7 @@ public class RateAdapter extends RecyclerView.Adapter<RateAdapter.RateViewHolder
             tvCurrency = itemView.findViewById(R.id.tv_currency);
             tvRateIdr = itemView.findViewById(R.id.tv_rateidr);
             imgrate = itemView.findViewById(R.id.img_item_photo);
+            txtCountry = itemView.findViewById(R.id.txtcountry);
         }
     }
 }

@@ -5,21 +5,25 @@ import android.os.Parcelable;
 
 public class RateInfo implements Parcelable {
     private String currency;
+    private String description;
     private String rateidr;
 
-    public RateInfo(String currency, String rateidr) {
+    public RateInfo(String currency, String description, String rateidr) {
         this.currency = currency;
+        this.description = description;
         this.rateidr = rateidr;
     }
 
     protected RateInfo(Parcel in) {
         currency = in.readString();
+        description = in.readString();
         rateidr = in.readString();
     }
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(currency);
+        dest.writeString(description);
         dest.writeString(rateidr);
     }
 
@@ -42,6 +46,14 @@ public class RateInfo implements Parcelable {
 
     public String getCurrency() {
         return currency;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 
     public void setCurrency(String currency) {

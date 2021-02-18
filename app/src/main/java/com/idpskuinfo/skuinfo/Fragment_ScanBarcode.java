@@ -70,7 +70,7 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
         TxtSkuDescription.setText("Sku Description");
         TxtSkuRetail.setText(String.format("%,.2f", Float.valueOf("0")));
 
-        Cursor cur_rate = currencyHelper.queryById("IDR");
+        Cursor cur_rate = currencyHelper.queryById("USD");
         if (cur_rate.getCount() > 0) {
             if (cur_rate != null) {
                 cur_rate.moveToFirst();

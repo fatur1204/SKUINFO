@@ -74,4 +74,8 @@ public class CurrencyHelper {
     public int deleteById(String id) {
         return database.delete(DATABASE_TABLE, DatabaseContract.CurrColumns.CURRID + " = ?", new String[]{id});
     }
+
+    public int deleteAll() {
+        return database.delete(DATABASE_TABLE, null, null);
+    }
 }

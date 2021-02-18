@@ -74,4 +74,8 @@ public class UpdateHelper {
     public int deleteById(String id) {
         return database.delete(DATABASE_TABLE, DatabaseContract.UpdateColumns.UPDATEID + " = ?", new String[]{id});
     }
+
+    public int deleteAll() {
+        return database.delete(DATABASE_TABLE, null,null);
+    }
 }

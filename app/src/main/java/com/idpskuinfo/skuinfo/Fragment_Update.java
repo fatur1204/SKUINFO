@@ -21,6 +21,10 @@ import com.idpskuinfo.skuinfo.db.UpdateHelper;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 public class Fragment_Update extends Fragment implements View.OnClickListener {
     private static final String TAG = Fragment_Update.class.getSimpleName();
@@ -32,7 +36,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
     ContentValues values = new ContentValues();
     EditText edtData;
 
-    public Fragment_Update(){
+    public Fragment_Update() {
         // Required empty public constructor
     }
 
@@ -65,53 +69,14 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
 
     @Override
     public void onClick(View v) {
-        /*values.put(DatabaseContract.NoteColumns.SKUID,"110111");
-        values.put(DatabaseContract.NoteColumns.DESCRIPTION,"FATHUR SKU");
-        values.put(DatabaseContract.NoteColumns.RETAIL_PRICE,"10000");
-        values.put(DatabaseContract.NoteColumns.SKUTYPE, "L");
-        long result = skuHelper.insert(values);
-        Log.d(TAG, "RESULT : " + result);
-        if(result > 0){
-            Toast.makeText(getContext(),"successfully sku", Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(getContext(),"failed sku", Toast.LENGTH_SHORT).show();
-        }
-
-        values.clear();
-
-        //add data currency
-        values.put(DatabaseContract.CurrColumns.CURRID,"IDR");
-        values.put(DatabaseContract.CurrColumns.CURRDATE,"17-02-2021");
-        values.put(DatabaseContract.CurrColumns.CUR_RET,"14500");
-        long result_cur = currencyHelper.insert(values);
-        Log.d(TAG, "RESULT : " + result_cur);
-        if(result_cur > 0){
-            Toast.makeText(getContext(),"successfully currency", Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(getContext(),"failed currency", Toast.LENGTH_SHORT).show();
-        }
-
-        values.clear();
-
-        //add data currency
-        values.put(DatabaseContract.UpdateColumns.UPDATEDATE,"17-02-2021");
-        values.put(DatabaseContract.UpdateColumns.UPDATETIME,"21:58:10");
-        long result_update = updateHelper.insert(values);
-        Log.d(TAG, "RESULT : " + result_update);
-        if(result_cur > 0){
-            Toast.makeText(getContext(),"successfully UPDATE", Toast.LENGTH_SHORT).show();
-        }else{
-            Toast.makeText(getContext(),"failed UPDATE", Toast.LENGTH_SHORT).show();
-        }*/
-
-        //clear data SKUMASTER
+        //Load data SKU MASTER----------------------------------------------------------------------
         Cursor qrycek = skuHelper.queryAll();
-        if(qrycek.getCount() >0){
-            if(qrycek !=null){
-                long delquery =  skuHelper.deleteAll();
+        if (qrycek.getCount() > 0) {
+            if (qrycek != null) {
+                long delquery = skuHelper.deleteAll();
                 Log.d(TAG, "value delete: " + delquery);
-                if(delquery ==0){
-                    Toast.makeText(getContext(),"Clear Data failed!", Toast.LENGTH_SHORT).show();
+                if (delquery == 0) {
+                    Toast.makeText(getContext(), "Clear Data failed!", Toast.LENGTH_SHORT).show();
                 }
             }
         }
@@ -125,24 +90,23 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             while ((mLine = reader.readLine()) != null) {
                 //Log.d(TAG, "DATAKU : " + mLine);
                 String SkuCode, SkuDescription, SkuRetail, SkuType = "";
-                SkuCode =mLine.substring(0,9);
-                SkuDescription = mLine.substring(9,39);
-                SkuRetail = mLine.substring(40,53);
-                SkuType = mLine.substring(53,54);
-
+                SkuCode = mLine.substring(0, 9);
+                SkuDescription = mLine.substring(9, 39);
+                SkuRetail = mLine.substring(40, 53);
+                SkuType = mLine.substring(53, 54);
 
                 //insert into table sqlite sku master
                 values.clear();
-                values.put(DatabaseContract.NoteColumns.SKUID,SkuCode.trim());
-                values.put(DatabaseContract.NoteColumns.DESCRIPTION,SkuDescription.trim());
-                values.put(DatabaseContract.NoteColumns.RETAIL_PRICE,SkuRetail.trim());
+                values.put(DatabaseContract.NoteColumns.SKUID, SkuCode.trim());
+                values.put(DatabaseContract.NoteColumns.DESCRIPTION, SkuDescription.trim());
+                values.put(DatabaseContract.NoteColumns.RETAIL_PRICE, SkuRetail.trim());
                 values.put(DatabaseContract.NoteColumns.SKUTYPE, SkuType.trim());
                 long result = skuHelper.insert(values);
                 Log.d(TAG, "RESULT : " + result + "-" + SkuCode);
-                if(result > 0){
-                    Toast.makeText(getContext(),"successfully sku", Toast.LENGTH_SHORT).show();
-                }else{
-                    Toast.makeText(getContext(),"failed sku", Toast.LENGTH_SHORT).show();
+                if (result > 0) {
+                    Toast.makeText(getContext(), "successfully sku", Toast.LENGTH_SHORT).show();
+                } else {
+                    Toast.makeText(getContext(), "failed sku", Toast.LENGTH_SHORT).show();
                 }
             }
         } catch (IOException e) {
@@ -156,5 +120,98 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 }
             }
         }
+        //Load data SKU MASTER END------------------------------------------------------------------
+
+        //Load data Currency------------------------------------------------------------------------
+        Cursor qrycek_curr = currencyHelper.queryAll();
+        if (qrycek_curr.getCount() > 0) {
+            if (qrycek_curr != null) {
+                long delquery = currencyHelper.deleteAll();
+                Log.d(TAG, "value delete: " + delquery);
+                if (delquery == 0) {
+                    Toast.makeText(getContext(), "Clear Data failed!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
+
+        String CurrId = "";
+        String CurrDes = "";
+        String CurrDate = "";
+        String CurrRate = "";
+        int i = 0;
+        try {
+            reader = new BufferedReader(
+                    new InputStreamReader(getActivity().getAssets().open("curency.txt"), "UTF-8"));
+            // do reading, usually loop until end of file reading
+            while ((mLine = reader.readLine()) != null) {
+                String Currency = mLine.trim();
+                String[] CurrencyList = Currency.split(",");
+                if (i > 0) {
+                    CurrId = CurrencyList[1];
+                    CurrDes = CurrencyList[0];
+                    CurrRate = CurrencyList[2];
+                } else {
+                    CurrDate = CurrencyList[0];
+                }
+
+                //insert into table sqlite sku master
+                if (i > 0) {
+                    values.clear();
+                    values.put(DatabaseContract.CurrColumns.CURRID, CurrId.trim());
+                    values.put(DatabaseContract.CurrColumns.CURDES, CurrDes.trim());
+                    values.put(DatabaseContract.CurrColumns.CURRDATE, CurrDate.trim());
+                    values.put(DatabaseContract.CurrColumns.CUR_RET, CurrRate.trim());
+                    long result = currencyHelper.insert(values);
+                    if (result > 0) {
+                        Toast.makeText(getContext(), "successfully currency", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Toast.makeText(getContext(), "failed currency", Toast.LENGTH_SHORT).show();
+                    }
+                }
+
+                i++;
+            }
+        } catch (IOException e) {
+            //log the exception
+        } finally {
+            if (reader != null) {
+                try {
+                    reader.close();
+                } catch (IOException e) {
+                    //log the exception
+                }
+            }
+        }
+        //Load data Currency End--------------------------------------------------------------------
+
+        //insert into last update
+        Cursor qrycek_update = updateHelper.queryAll();
+        if (qrycek_update.getCount() > 0) {
+            if (qrycek_update != null) {
+                long delquery = updateHelper.deleteAll();
+                Log.d(TAG, "value delete: " + delquery);
+                if (delquery == 0) {
+                    Toast.makeText(getContext(), "Clear Data failed!", Toast.LENGTH_SHORT).show();
+                }
+            }
+        }
+
+        String dateTime;
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm:ss");
+        dateTime = simpleDateFormat.format(calendar.getTime());
+        Log.d(TAG, "time now:" + dateTime);
+
+        values.clear();
+        values.put(DatabaseContract.UpdateColumns.UPDATEDATE, CurrDate.trim());
+        values.put(DatabaseContract.UpdateColumns.UPDATETIME, dateTime);
+        long result = updateHelper.insert(values);
+        if (result > 0) {
+            Toast.makeText(getContext(), "successfully add update datetime", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getContext(), "failed add update datetime", Toast.LENGTH_SHORT).show();
+        }
+        //------------------------------------------------------------------------------------------
     }
 }
