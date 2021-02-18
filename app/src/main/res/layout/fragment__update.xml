@@ -7,18 +7,108 @@
     android:background="#FEFFFD"
     tools:context=".Fragment_Update">
 
+    <LinearLayout
+        android:id="@+id/ln01"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="HostName"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/txthostname"
+                android:hint="HostName"
+                android:textAlignment="viewEnd"
+                android:gravity="end"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:textColor="@color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Port Number"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/txtport"
+                android:hint="Port Number"
+                android:textAlignment="viewEnd"
+                android:gravity="end"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:textColor="@color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="User Name"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/txtusername"
+                android:hint="User Name"
+                android:textAlignment="viewEnd"
+                android:gravity="end"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:textColor="@color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:text="Password"
+                android:layout_width="120dp"
+                android:layout_height="wrap_content"/>
+
+            <TextView
+                android:id="@+id/txtpassword"
+                android:hint="Password"
+                android:textAlignment="viewEnd"
+                android:gravity="end"
+                android:inputType="textPassword"
+                android:textStyle="bold"
+                android:textSize="15dp"
+                android:textColor="@color/black"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+    </LinearLayout>
+
     <Button
         android:id="@+id/btnupdate"
-        android:text="Update Data"
+        android:layout_below="@+id/ln01"
+        android:text="Download and Update"
         android:textAllCaps="false"
         android:textSize="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-
-    <TextView
-        android:id="@+id/txtdata"
-        android:layout_below="@+id/btnupdate"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
-
 </RelativeLayout>
