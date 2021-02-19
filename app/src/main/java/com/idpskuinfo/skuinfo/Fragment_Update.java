@@ -157,6 +157,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
 
             status = ftpclient.ftpConnect(hostname, username, password, 21);
             if (status == true) {
+                bCONNECTION = true;
                 Log.d(TAG, "Connection Success");
                 TxtLineLog.append("ftp status [connected]...\n");
                 ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skumaster.txt", getContext().getFilesDir().toString() + "/skumaster.txt");
@@ -169,8 +170,6 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 if (qrycek.getCount() > 0) {
                     if (qrycek != null) {
                         long delquery = skuHelper.deleteAll();
-                        //Log.d(TAG, "value delete: " + delquery);
-                        bCONNECTION = delquery != 0;
                     }
                 }
 
@@ -202,7 +201,11 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                         values.put(DatabaseContract.NoteColumns.RETAIL_PRICE, SkuRetail.trim());
                         values.put(DatabaseContract.NoteColumns.SKUTYPE, SkuType.trim());
                         long result = skuHelper.insert(values);
-                        bSKUMASTER = result > 0;
+                        if (result > 0) {
+                            bSKUMASTER = true;
+                        } else {
+                            bSKUMASTER = false;
+                        }
                     }
                 } catch (IOException e) {
                     //log the exception
@@ -258,7 +261,11 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                             values.put(DatabaseContract.CurrColumns.CUR_RET, CurrRate.trim());
 
                             long result = currencyHelper.insert(values);
-                            bCURRENCY = result > 0;
+                            if (result > 0) {
+                                bCURRENCY = true;
+                            } else {
+                                bCURRENCY = false;
+                            }
                         }
 
                         i++;
@@ -295,7 +302,11 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 values.put(DatabaseContract.UpdateColumns.UPDATEDATE, CurrDate.trim());
                 values.put(DatabaseContract.UpdateColumns.UPDATETIME, dateTime);
                 long result = updateHelper.insert(values);
-                bUPDATE_DATA = result > 0;
+                if (result > 0) {
+                    bUPDATE_DATA = true;
+                } else {
+                    bUPDATE_DATA = false;
+                }
                 //------------------------------------------------------------------------------------------
             } else {
                 Log.d(TAG, "Connection failed");
