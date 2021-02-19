@@ -124,6 +124,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
     public void onClick(View v) {
         if (v.getId() == R.id.btnupdate) {
             //download data from ftp
+            TxtLineLog.setText("");
             Log.d(TAG, "start 1");
             //downloadata();
             new LoadTask().execute();
@@ -328,7 +329,6 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
 
             ftpclient.ftpDisconnect();
             skuHelper.close();
-            ;
             currencyHelper.close();
             updateHelper.close();
 

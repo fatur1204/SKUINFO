@@ -17,7 +17,7 @@
         android:color="#FFFFFF"
         android:tint="#FFFFFF"
         android:backgroundTint="#FFFFFF"
-        android:title="Rate"
+        android:title="Exchange Rate"
         app:showAsAction="ifRoom" />
 
     <item

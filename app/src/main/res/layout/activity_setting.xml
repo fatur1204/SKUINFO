@@ -96,7 +96,7 @@
             android:textAllCaps="false"
             android:text="Add"
             android:layout_width="100dp"
-            android:backgroundTint="@color/colorPrimaryDark"
+            android:backgroundTint="#F43B3B"
             android:layout_height="wrap_content"/>
 
         <LinearLayout
@@ -121,6 +121,7 @@
             android:id="@+id/btncancel"
             android:textAllCaps="false"
             android:text="Cancel"
+            android:visibility="gone"
             android:layout_width="100dp"
             android:layout_height="wrap_content"/>
     </LinearLayout>
