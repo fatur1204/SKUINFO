@@ -92,6 +92,9 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
             TxtTimeUpdate.setText("Not Found");
         }
 
+        currencyHelper.close();
+        updateHelper.close();
+
         btnSearchData.setOnClickListener(this);
     }
 
@@ -107,7 +110,6 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
                 if (cursor.getCount() > 0) {
                     if (cursor != null) {
                         cursor.moveToFirst();
-                        Toast.makeText(getContext(), "Sukses", Toast.LENGTH_SHORT).show();
 
                         //VIEW DATA
                         TxtSkuNumber.setText(cursor.getString(cursor.getColumnIndex("skuid")));
@@ -119,7 +121,7 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
                         TxtSkuNumber.setText("Sku Number");
                         TxtSkuDescription.setText("Sku Description");
                         TxtSkuRetail.setText(String.format("%,.0f", Float.valueOf("0")));
-                        Toast.makeText(getContext(), "Failed", Toast.LENGTH_SHORT).show();
+                        Toast.makeText(getContext(), "Cannot open data!", Toast.LENGTH_SHORT).show();
                     }
                 } else {
                     Toast.makeText(getContext(), "Data Not Match!", Toast.LENGTH_LONG).show();

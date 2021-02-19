@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -50,6 +51,8 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
     private Button btnDownload;
     private ProgressBar progressBar;
     ProgressDialog progressDialog;
+    private Boolean bSKUMASTER, bCURRENCY, bUPDATE_DATA, bCONNECTION = false;
+    private EditText TxtLineLog;
 
     private SettingModel settingModel;
     private SettingPreference settingPreference;
@@ -96,6 +99,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
         TxtUserName = view.findViewById(R.id.txtusername);
         TxtPassword = view.findViewById(R.id.txtpassword);
         progressBar = view.findViewById(R.id.progress_bar);
+        TxtLineLog = view.findViewById(R.id.edtlinelog);
 
         settingPreference = new SettingPreference(getContext());
         showExistingPreference();
@@ -133,17 +137,25 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             progressDialog = ProgressDialog.show(getContext(), "Process Download and Update", "Please Wait!!!", false, false);
             //progressBar.setVisibility(View.VISIBLE);
             Log.d(TAG + " PreExceute", "On pre Exceute......");
+            TxtLineLog.append("Connecting into ftp server...\n");
         }
 
         @Override
         protected Boolean doInBackground(String... strings) {
             Log.d(TAG + " DoINBackGround", "On doInBackground...");
             boolean status = false;
+            bSKUMASTER = false;
+            bCURRENCY = false;
+            bUPDATE_DATA = false;
+            bCONNECTION = false;
+
             status = ftpclient.ftpConnect(hostname, username, password, 21);
             //Log.d(TAG, "current dir:" + ftpclient.ftpGetCurrentWorkingDirectory());
             //Log.d(TAG, "list dir:" + ftpclient.ftpPrintFilesList("/"));
             if (status == true) {
                 Log.d(TAG, "Connection Success");
+                TxtLineLog.append("FTP server connected...\n");
+                TxtLineLog.append("Downloa data from ftp...\n");
                 ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skumaster.txt", getContext().getFilesDir().toString() + "/skumaster.txt");
                 ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skurate.txt", getContext().getFilesDir().toString() + "/skurate.txt");
 
@@ -156,7 +168,9 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                         long delquery = skuHelper.deleteAll();
                         //Log.d(TAG, "value delete: " + delquery);
                         if (delquery == 0) {
-                            //Toast.makeText(getContext(), "Clear Data failed!", Toast.LENGTH_SHORT).show();
+                            bCONNECTION = false;
+                        } else {
+                            bCONNECTION = true;
                         }
                     }
                 }
@@ -164,7 +178,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
 
                 BufferedReader reader = null;
                 String mLine = "";
-                int record =0;
+                int record = 0;
                 String SkuCode = "";
                 String SkuDescription = "";
                 String SkuRetail = "";
@@ -173,7 +187,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                     //reader = new BufferedReader(new InputStreamReader(getActivity().getAssets().open("skumaster.txt"), "UTF-8"));
                     File file = new File(getActivity().getFilesDir().toString(), "skumaster.txt");
                     reader = new BufferedReader(new FileReader(file));
-                    // do reading, usually loop until end of file reading
+                    TxtLineLog.append("Update Skumaster...\n");
                     while ((mLine = reader.readLine()) != null) {
                         //Log.d(TAG, "DATAKU : " + mLine);
                         String SkuMaster = mLine.trim();
@@ -190,11 +204,10 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                         values.put(DatabaseContract.NoteColumns.RETAIL_PRICE, SkuRetail.trim());
                         values.put(DatabaseContract.NoteColumns.SKUTYPE, SkuType.trim());
                         long result = skuHelper.insert(values);
-                        //Log.d(TAG, "RESULT : " + result + "-" + SkuCode);
                         if (result > 0) {
-                            //Toast.makeText(getContext(), "successfully sku", Toast.LENGTH_SHORT).show();
+                            bSKUMASTER = true;
                         } else {
-                            //Toast.makeText(getContext(), "failed sku", Toast.LENGTH_SHORT).show();
+                            bSKUMASTER = false;
                         }
                     }
                 } catch (IOException e) {
@@ -215,10 +228,6 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 if (qrycek_curr.getCount() > 0) {
                     if (qrycek_curr != null) {
                         long delquery = currencyHelper.deleteAll();
-                        //Log.d(TAG, "value delete: " + delquery);
-                        if (delquery == 0) {
-                            //Toast.makeText(getContext(), "Clear Data failed!", Toast.LENGTH_SHORT).show();
-                        }
                     }
                 }
 
@@ -232,6 +241,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                     reader = new BufferedReader(
                             new InputStreamReader(getActivity().getAssets().open("curency.txt"), "UTF-8"));
                     // do reading, usually loop until end of file reading
+                    TxtLineLog.append("Update currency...\n");
                     while ((mLine = reader.readLine()) != null) {
                         String Currency = mLine.trim();
                         String[] CurrencyList = Currency.split(",");
@@ -250,16 +260,18 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                             values.put(DatabaseContract.CurrColumns.CURDES, CurrDes.trim());
                             values.put(DatabaseContract.CurrColumns.CURRDATE, CurrDate.trim());
                             values.put(DatabaseContract.CurrColumns.CUR_RET, CurrRate.trim());
+
                             long result = currencyHelper.insert(values);
                             if (result > 0) {
-                                //Toast.makeText(getContext(), "successfully currency", Toast.LENGTH_SHORT).show();
+                                bCURRENCY = true;
                             } else {
-                                //Toast.makeText(getContext(), "failed currency", Toast.LENGTH_SHORT).show();
+                                bCURRENCY = false;
                             }
                         }
 
                         i++;
                     }
+
                 } catch (IOException e) {
                     //log the exception
                 } finally {
@@ -278,10 +290,6 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 if (qrycek_update.getCount() > 0) {
                     if (qrycek_update != null) {
                         long delquery = updateHelper.deleteAll();
-                        //Log.d(TAG, "value delete: " + delquery);
-                        if (delquery == 0) {
-                            //Toast.makeText(getContext(), "Clear Data failed!", Toast.LENGTH_SHORT).show();
-                        }
                     }
                 }
 
@@ -296,13 +304,18 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 values.put(DatabaseContract.UpdateColumns.UPDATETIME, dateTime);
                 long result = updateHelper.insert(values);
                 if (result > 0) {
+                    bUPDATE_DATA = true;
+                    TxtLineLog.append("Update datetime sucess...\n");
                     //Toast.makeText(getContext(), "successfully add update datetime", Toast.LENGTH_SHORT).show();
                 } else {
-                    //Toast.makeText(getContext(), "failed add update datetime", Toast.LENGTH_SHORT).show();
+                    bUPDATE_DATA = false;
+                    TxtLineLog.append("Update datetime failed...\n");
                 }
                 //------------------------------------------------------------------------------------------
             } else {
                 Log.d(TAG, "Connection failed");
+                TxtLineLog.append("Connection ftp failed...\n");
+                ftpclient.ftpDisconnect();
             }
             return status;
         }
@@ -311,12 +324,27 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
         protected void onPostExecute(Boolean result) {
             progressBar.setVisibility(View.INVISIBLE);
             progressDialog.dismiss();
-            Toast.makeText(getContext(),"Update Data finish!", Toast.LENGTH_LONG).show();
             Log.d(TAG + " onPostExecute", "" + result);
+
+            ftpclient.ftpDisconnect();
             skuHelper.close();
+            ;
             currencyHelper.close();
             updateHelper.close();
-            ftpclient.ftpDisconnect();
+
+
+            if (!bCONNECTION) {
+                Toast.makeText(getContext(), "Connection into ftp failed!", Toast.LENGTH_LONG).show();
+            } else {
+                if ((bSKUMASTER = true) && (bCURRENCY = true) && (bUPDATE_DATA = true)) {
+                    TxtLineLog.append("Update data sucessfuly...\n");
+                    Toast.makeText(getContext(), "Update complete", Toast.LENGTH_LONG).show();
+                } else {
+                    TxtLineLog.append("Update data failed...\n");
+                    Toast.makeText(getContext(), "Update failed", Toast.LENGTH_LONG).show();
+                }
+            }
+
         }
     }
 

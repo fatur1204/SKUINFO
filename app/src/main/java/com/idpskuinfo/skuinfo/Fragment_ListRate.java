@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -80,8 +81,9 @@ public class Fragment_ListRate extends Fragment implements LoadCurrencyCallback 
             adapter.setListRate(rateInfos);
         } else {
             adapter.setListRate(new ArrayList<RateInfo>());
-            //showSnackbarMessage("Tidak ada data saat ini");
+            Toast.makeText(getContext(),"No data found!", Toast.LENGTH_LONG).show();
         }
+        currencyHelper.close();
     }
 
 

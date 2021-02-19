@@ -121,4 +121,26 @@
         android:layout_centerVertical="true"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp" />
+
+    <LinearLayout
+        android:layout_below="@id/btnupdate"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <EditText
+            android:id="@+id/edtlinelog"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_below="@id/btnupdate"
+            android:ems="10"
+            android:lines="12"
+            android:textSize="12dp"
+            android:fontFamily="monospace"
+            android:textColor="#7C7979"
+            android:enabled="false"
+            android:gravity="start|top"
+            android:scrollbars="vertical"
+            android:inputType="textMultiLine" />
+    </LinearLayout>
 </RelativeLayout>

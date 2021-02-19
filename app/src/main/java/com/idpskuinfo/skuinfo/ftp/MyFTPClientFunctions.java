@@ -25,6 +25,7 @@ public class MyFTPClientFunctions {
         try {
             mFTPClient = new FTPClient();
             // connecting to the host
+            //mFTPClient.setConnectTimeout(10000);
             mFTPClient.connect(host, port);
 
             // now check the reply code, if positive mean connection success
