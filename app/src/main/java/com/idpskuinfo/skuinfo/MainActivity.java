@@ -66,7 +66,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
 
             case R.id.navigation_tvshow:
                 bundle.putInt("message", 0);
-                getSupportActionBar().setTitle("List Rate");
+                getSupportActionBar().setTitle("Exchange Rate");
                 fragment = new Fragment_ListRate();
                 break;
 

@@ -22,9 +22,10 @@
 
         <EditText
             android:imeOptions="actionGo"
-            android:textSize="30dp"
+            android:textSize="28dp"
             android:inputType="number"
             android:id="@+id/edtskucode"
+            android:maxLength="15"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/button_border"

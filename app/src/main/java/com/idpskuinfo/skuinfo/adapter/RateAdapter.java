@@ -51,12 +51,9 @@ public class RateAdapter extends RecyclerView.Adapter<RateAdapter.RateViewHolder
     @Override
     public void onBindViewHolder(@NonNull RateViewHolder holder, int position) {
         holder.tvCurrency.setText(rateInfos.get(position).getCurrency());
-        //holder.tvRateIdr.setText(rateInfos.get(position).getRateidr());
-
-
-        holder.tvRateIdr.setText(String.format("%,.3f", Float.valueOf(rateInfos.get(position).getRateidr())));
-
+        holder.tvRateIdr.setText("IDR. "+String.format("%,.3f", Float.valueOf(rateInfos.get(position).getRateidr())));
         holder.txtCountry.setText(rateInfos.get(position).getDescription());
+
         String imgdata = rateInfos.get(position).getCurrency();
         imgdata = imgdata.toLowerCase();
         String uri = "@drawable/" + imgdata;
