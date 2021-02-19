@@ -94,8 +94,8 @@
         <Button
             android:id="@+id/btnadd"
             android:textAllCaps="false"
-            android:text="Add Data"
-            android:layout_width="120dp"
+            android:text="Add"
+            android:layout_width="100dp"
             android:backgroundTint="@color/colorPrimaryDark"
             android:layout_height="wrap_content"/>
 
@@ -107,8 +107,8 @@
         <Button
             android:id="@+id/btnsave"
             android:textAllCaps="false"
-            android:text="Save Data"
-            android:layout_width="120dp"
+            android:text="Save"
+            android:layout_width="100dp"
             android:backgroundTint="@color/teal_700"
             android:layout_height="wrap_content"/>
 
@@ -121,7 +121,7 @@
             android:id="@+id/btncancel"
             android:textAllCaps="false"
             android:text="Cancel"
-            android:layout_width="120dp"
+            android:layout_width="100dp"
             android:layout_height="wrap_content"/>
     </LinearLayout>
 </RelativeLayout>

@@ -119,7 +119,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
         edtPassword.setText(settingModel.getPassword().isEmpty() ? "" : settingModel.getPassword());
 
         btnSave.setEnabled(false);
-        btnAdd.setText("Edit Data");
+        btnAdd.setText("Edit");
         setActiveEdit(false);
     }
 

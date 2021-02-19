@@ -111,4 +111,14 @@
         android:textSize="20dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
+
+
+    <ProgressBar
+        android:id="@+id/progress_bar"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp" />
 </RelativeLayout>

@@ -2,21 +2,22 @@ package com.idpskuinfo.skuinfo;
 
 import android.Manifest;
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.os.AsyncTask;
 import android.os.Bundle;
-import android.os.Environment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
 import com.idpskuinfo.skuinfo.db.CurrencyHelper;
@@ -27,19 +28,11 @@ import com.idpskuinfo.skuinfo.ftp.MyFTPClientFunctions;
 import com.idpskuinfo.skuinfo.setting.SettingModel;
 import com.idpskuinfo.skuinfo.setting.SettingPreference;
 
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
-
-import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
@@ -55,6 +48,8 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
     private String hostname, port, username, password;
     private TextView TxtHostName, TxtPort, TxtUserName, TxtPassword;
     private Button btnDownload;
+    private ProgressBar progressBar;
+    ProgressDialog progressDialog;
 
     private SettingModel settingModel;
     private SettingPreference settingPreference;
@@ -100,6 +95,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
         TxtPort = view.findViewById(R.id.txtport);
         TxtUserName = view.findViewById(R.id.txtusername);
         TxtPassword = view.findViewById(R.id.txtpassword);
+        progressBar = view.findViewById(R.id.progress_bar);
 
         settingPreference = new SettingPreference(getContext());
         showExistingPreference();
@@ -125,182 +121,203 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
         if (v.getId() == R.id.btnupdate) {
             //download data from ftp
             Log.d(TAG, "start 1");
-            downloadata();
-            //Load data SKU MASTER----------------------------------------------------------------------
-            Log.d(TAG, "start 2");
-            Cursor qrycek = skuHelper.queryAll();
-            if (qrycek.getCount() > 0) {
-                if (qrycek != null) {
-                    long delquery = skuHelper.deleteAll();
-                    Log.d(TAG, "value delete: " + delquery);
-                    if (delquery == 0) {
-                        Toast.makeText(getContext(), "Clear Data failed!", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-            //getContext().getFilesDir().toString()+"/skumaster.txt"
-            BufferedReader reader = null;
-            String mLine = "";
-            String SkuCode =""; String SkuDescription = ""; String SkuRetail =""; String SkuType = "";
-            try {
-                //reader = new BufferedReader(new InputStreamReader(getActivity().getAssets().open("skumaster.txt"), "UTF-8"));
-                File file = new File(getActivity().getFilesDir().toString(),"skumaster.txt");
-                reader = new BufferedReader(new FileReader(file));
-                // do reading, usually loop until end of file reading
-                while ((mLine = reader.readLine()) != null) {
-                    //Log.d(TAG, "DATAKU : " + mLine);
-                    String SkuMaster = mLine.trim();
-                    String[] SkuMasterList = SkuMaster.split(",");
-                    SkuCode = SkuMasterList[0];
-                    SkuDescription = SkuMasterList[1];
-                    SkuRetail = SkuMasterList[2];
-                    SkuType = SkuMasterList[3];
-
-                    //insert into table sqlite sku master
-                    values.clear();
-                    values.put(DatabaseContract.NoteColumns.SKUID, SkuCode.trim());
-                    values.put(DatabaseContract.NoteColumns.DESCRIPTION, SkuDescription.trim());
-                    values.put(DatabaseContract.NoteColumns.RETAIL_PRICE, SkuRetail.trim());
-                    values.put(DatabaseContract.NoteColumns.SKUTYPE, SkuType.trim());
-                    long result = skuHelper.insert(values);
-                    Log.d(TAG, "RESULT : " + result + "-" + SkuCode);
-                    if (result > 0) {
-                        Toast.makeText(getContext(), "successfully sku", Toast.LENGTH_SHORT).show();
-                    } else {
-                        Toast.makeText(getContext(), "failed sku", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            } catch (IOException e) {
-                //log the exception
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        //log the exception
-                    }
-                }
-            }
-            //Load data SKU MASTER END------------------------------------------------------------------
-
-            //Load data Currency------------------------------------------------------------------------
-            Cursor qrycek_curr = currencyHelper.queryAll();
-            if (qrycek_curr.getCount() > 0) {
-                if (qrycek_curr != null) {
-                    long delquery = currencyHelper.deleteAll();
-                    Log.d(TAG, "value delete: " + delquery);
-                    if (delquery == 0) {
-                        Toast.makeText(getContext(), "Clear Data failed!", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-
-
-            String CurrId = "";
-            String CurrDes = "";
-            String CurrDate = "";
-            String CurrRate = "";
-            int i = 0;
-            try {
-                reader = new BufferedReader(
-                        new InputStreamReader(getActivity().getAssets().open("curency.txt"), "UTF-8"));
-                // do reading, usually loop until end of file reading
-                while ((mLine = reader.readLine()) != null) {
-                    String Currency = mLine.trim();
-                    String[] CurrencyList = Currency.split(",");
-                    if (i > 0) {
-                        CurrId = CurrencyList[1];
-                        CurrDes = CurrencyList[0];
-                        CurrRate = CurrencyList[2];
-                    } else {
-                        CurrDate = CurrencyList[0];
-                    }
-
-                    //insert into table sqlite sku master
-                    if (i > 0) {
-                        values.clear();
-                        values.put(DatabaseContract.CurrColumns.CURRID, CurrId.trim());
-                        values.put(DatabaseContract.CurrColumns.CURDES, CurrDes.trim());
-                        values.put(DatabaseContract.CurrColumns.CURRDATE, CurrDate.trim());
-                        values.put(DatabaseContract.CurrColumns.CUR_RET, CurrRate.trim());
-                        long result = currencyHelper.insert(values);
-                        if (result > 0) {
-                            Toast.makeText(getContext(), "successfully currency", Toast.LENGTH_SHORT).show();
-                        } else {
-                            Toast.makeText(getContext(), "failed currency", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    i++;
-                }
-            } catch (IOException e) {
-                //log the exception
-            } finally {
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (IOException e) {
-                        //log the exception
-                    }
-                }
-            }
-            //Load data Currency End--------------------------------------------------------------------
-
-            //insert into last update
-            Cursor qrycek_update = updateHelper.queryAll();
-            if (qrycek_update.getCount() > 0) {
-                if (qrycek_update != null) {
-                    long delquery = updateHelper.deleteAll();
-                    Log.d(TAG, "value delete: " + delquery);
-                    if (delquery == 0) {
-                        Toast.makeText(getContext(), "Clear Data failed!", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            }
-
-            String dateTime;
-            Calendar calendar = Calendar.getInstance();
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm:ss");
-            dateTime = simpleDateFormat.format(calendar.getTime());
-            Log.d(TAG, "time now:" + dateTime);
-
-            values.clear();
-            values.put(DatabaseContract.UpdateColumns.UPDATEDATE, CurrDate.trim());
-            values.put(DatabaseContract.UpdateColumns.UPDATETIME, dateTime);
-            long result = updateHelper.insert(values);
-            if (result > 0) {
-                Toast.makeText(getContext(), "successfully add update datetime", Toast.LENGTH_SHORT).show();
-            } else {
-                Toast.makeText(getContext(), "failed add update datetime", Toast.LENGTH_SHORT).show();
-            }
-            //------------------------------------------------------------------------------------------
+            //downloadata();
+            new LoadTask().execute();
         }
     }
 
-    private void downloadata() {
-        new Thread(new Runnable() {
-            public void run() {
-                boolean status = false;
-                status = ftpclient.ftpConnect(hostname, username, password, 21);
-                Log.d(TAG, "current dir:"+ftpclient.ftpGetCurrentWorkingDirectory());
-                Log.d(TAG, "list dir:"+ftpclient.ftpPrintFilesList("/"));
-                if (status == true) {
-                    Log.d(TAG, "Connection Success");
-                    ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory()+"skumaster.txt", getContext().getFilesDir().toString()+"/skumaster.txt");
-                    ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory()+"skurate.txt", getContext().getFilesDir().toString()+"/skurate.txt");
-                } else {
-                    Log.d(TAG, "Connection failed");
-                    //handler.sendEmptyMessage(-1);
+    private class LoadTask extends AsyncTask<String, Integer, Boolean> {
+
+        @Override
+        protected void onPreExecute() {
+            progressDialog = ProgressDialog.show(getContext(), "Process Download and Update", "Please Wait!!!", false, false);
+            //progressBar.setVisibility(View.VISIBLE);
+            Log.d(TAG + " PreExceute", "On pre Exceute......");
+        }
+
+        @Override
+        protected Boolean doInBackground(String... strings) {
+            Log.d(TAG + " DoINBackGround", "On doInBackground...");
+            boolean status = false;
+            status = ftpclient.ftpConnect(hostname, username, password, 21);
+            //Log.d(TAG, "current dir:" + ftpclient.ftpGetCurrentWorkingDirectory());
+            //Log.d(TAG, "list dir:" + ftpclient.ftpPrintFilesList("/"));
+            if (status == true) {
+                Log.d(TAG, "Connection Success");
+                ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skumaster.txt", getContext().getFilesDir().toString() + "/skumaster.txt");
+                ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skurate.txt", getContext().getFilesDir().toString() + "/skurate.txt");
+
+
+                //Load data SKU MASTER----------------------------------------------------------------------
+                Log.d(TAG, "start 2");
+                Cursor qrycek = skuHelper.queryAll();
+                if (qrycek.getCount() > 0) {
+                    if (qrycek != null) {
+                        long delquery = skuHelper.deleteAll();
+                        //Log.d(TAG, "value delete: " + delquery);
+                        if (delquery == 0) {
+                            //Toast.makeText(getContext(), "Clear Data failed!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
                 }
 
+
+                BufferedReader reader = null;
+                String mLine = "";
+                int record =0;
+                String SkuCode = "";
+                String SkuDescription = "";
+                String SkuRetail = "";
+                String SkuType = "";
                 try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    //reader = new BufferedReader(new InputStreamReader(getActivity().getAssets().open("skumaster.txt"), "UTF-8"));
+                    File file = new File(getActivity().getFilesDir().toString(), "skumaster.txt");
+                    reader = new BufferedReader(new FileReader(file));
+                    // do reading, usually loop until end of file reading
+                    while ((mLine = reader.readLine()) != null) {
+                        //Log.d(TAG, "DATAKU : " + mLine);
+                        String SkuMaster = mLine.trim();
+                        String[] SkuMasterList = SkuMaster.split(",");
+                        SkuCode = SkuMasterList[0];
+                        SkuDescription = SkuMasterList[1];
+                        SkuRetail = SkuMasterList[2];
+                        SkuType = SkuMasterList[3];
+
+                        //insert into table sqlite sku master
+                        values.clear();
+                        values.put(DatabaseContract.NoteColumns.SKUID, SkuCode.trim());
+                        values.put(DatabaseContract.NoteColumns.DESCRIPTION, SkuDescription.trim());
+                        values.put(DatabaseContract.NoteColumns.RETAIL_PRICE, SkuRetail.trim());
+                        values.put(DatabaseContract.NoteColumns.SKUTYPE, SkuType.trim());
+                        long result = skuHelper.insert(values);
+                        //Log.d(TAG, "RESULT : " + result + "-" + SkuCode);
+                        if (result > 0) {
+                            //Toast.makeText(getContext(), "successfully sku", Toast.LENGTH_SHORT).show();
+                        } else {
+                            //Toast.makeText(getContext(), "failed sku", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                } catch (IOException e) {
+                    //log the exception
+                } finally {
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e) {
+                            //log the exception
+                        }
+                    }
                 }
+                //Load data SKU MASTER END------------------------------------------------------------------
+
+                //Load data Currency------------------------------------------------------------------------
+                Cursor qrycek_curr = currencyHelper.queryAll();
+                if (qrycek_curr.getCount() > 0) {
+                    if (qrycek_curr != null) {
+                        long delquery = currencyHelper.deleteAll();
+                        //Log.d(TAG, "value delete: " + delquery);
+                        if (delquery == 0) {
+                            //Toast.makeText(getContext(), "Clear Data failed!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+
+                String CurrId = "";
+                String CurrDes = "";
+                String CurrDate = "";
+                String CurrRate = "";
+                int i = 0;
+                try {
+                    reader = new BufferedReader(
+                            new InputStreamReader(getActivity().getAssets().open("curency.txt"), "UTF-8"));
+                    // do reading, usually loop until end of file reading
+                    while ((mLine = reader.readLine()) != null) {
+                        String Currency = mLine.trim();
+                        String[] CurrencyList = Currency.split(",");
+                        if (i > 0) {
+                            CurrId = CurrencyList[1];
+                            CurrDes = CurrencyList[0];
+                            CurrRate = CurrencyList[2];
+                        } else {
+                            CurrDate = CurrencyList[0];
+                        }
+
+                        //insert into table sqlite sku master
+                        if (i > 0) {
+                            values.clear();
+                            values.put(DatabaseContract.CurrColumns.CURRID, CurrId.trim());
+                            values.put(DatabaseContract.CurrColumns.CURDES, CurrDes.trim());
+                            values.put(DatabaseContract.CurrColumns.CURRDATE, CurrDate.trim());
+                            values.put(DatabaseContract.CurrColumns.CUR_RET, CurrRate.trim());
+                            long result = currencyHelper.insert(values);
+                            if (result > 0) {
+                                //Toast.makeText(getContext(), "successfully currency", Toast.LENGTH_SHORT).show();
+                            } else {
+                                //Toast.makeText(getContext(), "failed currency", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+
+                        i++;
+                    }
+                } catch (IOException e) {
+                    //log the exception
+                } finally {
+                    if (reader != null) {
+                        try {
+                            reader.close();
+                        } catch (IOException e) {
+                            //log the exception
+                        }
+                    }
+                }
+                //Load data Currency End--------------------------------------------------------------------
+
+                //insert into last update
+                Cursor qrycek_update = updateHelper.queryAll();
+                if (qrycek_update.getCount() > 0) {
+                    if (qrycek_update != null) {
+                        long delquery = updateHelper.deleteAll();
+                        //Log.d(TAG, "value delete: " + delquery);
+                        if (delquery == 0) {
+                            //Toast.makeText(getContext(), "Clear Data failed!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+
+                String dateTime;
+                Calendar calendar = Calendar.getInstance();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm:ss");
+                dateTime = simpleDateFormat.format(calendar.getTime());
+                //Log.d(TAG, "time now:" + dateTime);
+
+                values.clear();
+                values.put(DatabaseContract.UpdateColumns.UPDATEDATE, CurrDate.trim());
+                values.put(DatabaseContract.UpdateColumns.UPDATETIME, dateTime);
+                long result = updateHelper.insert(values);
+                if (result > 0) {
+                    //Toast.makeText(getContext(), "successfully add update datetime", Toast.LENGTH_SHORT).show();
+                } else {
+                    //Toast.makeText(getContext(), "failed add update datetime", Toast.LENGTH_SHORT).show();
+                }
+                //------------------------------------------------------------------------------------------
+            } else {
+                Log.d(TAG, "Connection failed");
             }
-        }).start();
-        ftpclient.ftpDisconnect();
+            return status;
+        }
+
+        @Override
+        protected void onPostExecute(Boolean result) {
+            progressBar.setVisibility(View.INVISIBLE);
+            progressDialog.dismiss();
+            Toast.makeText(getContext(),"Update Data finish!", Toast.LENGTH_LONG).show();
+            Log.d(TAG + " onPostExecute", "" + result);
+            skuHelper.close();
+            currencyHelper.close();
+            updateHelper.close();
+            ftpclient.ftpDisconnect();
+        }
     }
 
     private void showExistingPreference() {
