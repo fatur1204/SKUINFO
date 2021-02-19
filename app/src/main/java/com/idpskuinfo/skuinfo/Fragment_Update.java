@@ -158,6 +158,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             status = ftpclient.ftpConnect(hostname, username, password, 21);
             if (status == true) {
                 Log.d(TAG, "Connection Success");
+                TxtLineLog.append("ftp status [connected]...\n");
                 ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skumaster.txt", getContext().getFilesDir().toString() + "/skumaster.txt");
                 ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skurate.txt", getContext().getFilesDir().toString() + "/skurate.txt");
 
@@ -231,8 +232,11 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 String CurrRate = "";
                 int i = 0;
                 try {
-                    reader = new BufferedReader(
-                            new InputStreamReader(getActivity().getAssets().open("curency.txt"), StandardCharsets.UTF_8));
+                    //reader = new BufferedReader(
+                    //        new InputStreamReader(getActivity().getAssets().open("curency.txt"), StandardCharsets.UTF_8));
+
+                    File file = new File(getActivity().getFilesDir().toString(), "skurate.txt");
+                    reader = new BufferedReader(new FileReader(file));
                     // do reading, usually loop until end of file reading
                     while ((mLine = reader.readLine()) != null) {
                         String Currency = mLine.trim();
@@ -317,10 +321,12 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 Toast.makeText(getContext(), "Connection into ftp failed!", Toast.LENGTH_LONG).show();
             } else {
                 if ((bSKUMASTER = true) && (bCURRENCY = true) && (bUPDATE_DATA = true)) {
-                    TxtLineLog.append("Update data sucessfuly...\n");
+                    TxtLineLog.append("Update data sucessfully...\n");
+                    TxtLineLog.append("disconnect...\n");
                     Toast.makeText(getContext(), "Update complete", Toast.LENGTH_LONG).show();
                 } else {
                     TxtLineLog.append("Update data failed...\n");
+                    TxtLineLog.append("disconnect...\n");
                     Toast.makeText(getContext(), "Update failed", Toast.LENGTH_LONG).show();
                 }
             }

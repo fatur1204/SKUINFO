@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
@@ -28,6 +29,7 @@ public class Fragment_ListRate extends Fragment implements LoadCurrencyCallback 
     private List<RateInfo> rateInfoList = new ArrayList<>();
     private RateAdapter adapter;
     private ProgressBar progressBar;
+    TextView TxtNotfound;
 
     public Fragment_ListRate() {
         // Required empty public constructor
@@ -54,6 +56,7 @@ public class Fragment_ListRate extends Fragment implements LoadCurrencyCallback 
 
         recyclerView = view.findViewById(R.id.rv_listrate);
         progressBar = view.findViewById(R.id.progress_bar);
+        TxtNotfound = view.findViewById(R.id.txtnotfound);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
 
@@ -79,8 +82,10 @@ public class Fragment_ListRate extends Fragment implements LoadCurrencyCallback 
         progressBar.setVisibility(View.INVISIBLE);
         if (rateInfos.size() > 0) {
             adapter.setListRate(rateInfos);
+            TxtNotfound.setVisibility(View.INVISIBLE);
         } else {
             adapter.setListRate(new ArrayList<RateInfo>());
+            TxtNotfound.setVisibility(View.VISIBLE);
             Toast.makeText(getContext(),"No data found!", Toast.LENGTH_LONG).show();
         }
         currencyHelper.close();
