@@ -13,7 +13,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,12 +33,14 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.Date;
 
 public class Fragment_Update extends Fragment implements View.OnClickListener {
     private static final String TAG = Fragment_Update.class.getSimpleName();
-    private int MILLIS_IN_SEC = 5000;
+    private final int MILLIS_IN_SEC = 5000;
     Button btnupdate;
     private Fragment_Update fragment_update;
     SkuHelper skuHelper;
@@ -52,7 +53,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
     private ProgressBar progressBar;
     ProgressDialog progressDialog;
     private Boolean bSKUMASTER, bCURRENCY, bUPDATE_DATA, bCONNECTION = false;
-    private EditText TxtLineLog;
+    private TextView TxtLineLog;
 
     private SettingModel settingModel;
     private SettingPreference settingPreference;
@@ -60,7 +61,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
     private MyFTPClientFunctions ftpclient = null;
 
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
-    private static String[] PERMISSIONS_STORAGE = {
+    private static final String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
@@ -87,11 +88,11 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
         super.onViewCreated(view, savedInstanceState);
 
         skuHelper = SkuHelper.getInstance(getContext());
-        skuHelper.open();
+        //skuHelper.open();
         currencyHelper = CurrencyHelper.getInstance(getContext());
-        currencyHelper.open();
+        //currencyHelper.open();
         updateHelper = UpdateHelper.getInstance(getContext());
-        updateHelper.open();
+        //updateHelper.open();
 
         btnupdate = view.findViewById(R.id.btnupdate);
         TxtHostName = view.findViewById(R.id.txthostname);
@@ -135,10 +136,14 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
 
         @Override
         protected void onPreExecute() {
-            progressDialog = ProgressDialog.show(getContext(), "Process Download and Update", "Please Wait!!!", false, false);
+
+            skuHelper.open();
+            currencyHelper.open();
+            updateHelper.open();
+
+            progressDialog = ProgressDialog.show(getContext(), "Please Wait!", "Process Download and Update...", false, false);
             //progressBar.setVisibility(View.VISIBLE);
             Log.d(TAG + " PreExceute", "On pre Exceute......");
-            TxtLineLog.append("Connecting into ftp server...\n");
         }
 
         @Override
@@ -151,12 +156,8 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             bCONNECTION = false;
 
             status = ftpclient.ftpConnect(hostname, username, password, 21);
-            //Log.d(TAG, "current dir:" + ftpclient.ftpGetCurrentWorkingDirectory());
-            //Log.d(TAG, "list dir:" + ftpclient.ftpPrintFilesList("/"));
             if (status == true) {
                 Log.d(TAG, "Connection Success");
-                TxtLineLog.append("FTP server connected...\n");
-                TxtLineLog.append("Downloa data from ftp...\n");
                 ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skumaster.txt", getContext().getFilesDir().toString() + "/skumaster.txt");
                 ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skurate.txt", getContext().getFilesDir().toString() + "/skurate.txt");
 
@@ -168,11 +169,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                     if (qrycek != null) {
                         long delquery = skuHelper.deleteAll();
                         //Log.d(TAG, "value delete: " + delquery);
-                        if (delquery == 0) {
-                            bCONNECTION = false;
-                        } else {
-                            bCONNECTION = true;
-                        }
+                        bCONNECTION = delquery != 0;
                     }
                 }
 
@@ -188,7 +185,6 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                     //reader = new BufferedReader(new InputStreamReader(getActivity().getAssets().open("skumaster.txt"), "UTF-8"));
                     File file = new File(getActivity().getFilesDir().toString(), "skumaster.txt");
                     reader = new BufferedReader(new FileReader(file));
-                    TxtLineLog.append("Update Skumaster...\n");
                     while ((mLine = reader.readLine()) != null) {
                         //Log.d(TAG, "DATAKU : " + mLine);
                         String SkuMaster = mLine.trim();
@@ -205,11 +201,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                         values.put(DatabaseContract.NoteColumns.RETAIL_PRICE, SkuRetail.trim());
                         values.put(DatabaseContract.NoteColumns.SKUTYPE, SkuType.trim());
                         long result = skuHelper.insert(values);
-                        if (result > 0) {
-                            bSKUMASTER = true;
-                        } else {
-                            bSKUMASTER = false;
-                        }
+                        bSKUMASTER = result > 0;
                     }
                 } catch (IOException e) {
                     //log the exception
@@ -240,9 +232,8 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 int i = 0;
                 try {
                     reader = new BufferedReader(
-                            new InputStreamReader(getActivity().getAssets().open("curency.txt"), "UTF-8"));
+                            new InputStreamReader(getActivity().getAssets().open("curency.txt"), StandardCharsets.UTF_8));
                     // do reading, usually loop until end of file reading
-                    TxtLineLog.append("Update currency...\n");
                     while ((mLine = reader.readLine()) != null) {
                         String Currency = mLine.trim();
                         String[] CurrencyList = Currency.split(",");
@@ -263,11 +254,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                             values.put(DatabaseContract.CurrColumns.CUR_RET, CurrRate.trim());
 
                             long result = currencyHelper.insert(values);
-                            if (result > 0) {
-                                bCURRENCY = true;
-                            } else {
-                                bCURRENCY = false;
-                            }
+                            bCURRENCY = result > 0;
                         }
 
                         i++;
@@ -295,23 +282,16 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 }
 
                 String dateTime;
-                Calendar calendar = Calendar.getInstance();
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("hh:mm:ss");
+                Date calendar = Calendar.getInstance().getTime();
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
                 dateTime = simpleDateFormat.format(calendar.getTime());
-                //Log.d(TAG, "time now:" + dateTime);
+                Log.d(TAG, "time now:" + dateTime);
 
                 values.clear();
                 values.put(DatabaseContract.UpdateColumns.UPDATEDATE, CurrDate.trim());
                 values.put(DatabaseContract.UpdateColumns.UPDATETIME, dateTime);
                 long result = updateHelper.insert(values);
-                if (result > 0) {
-                    bUPDATE_DATA = true;
-                    TxtLineLog.append("Update datetime sucess...\n");
-                    //Toast.makeText(getContext(), "successfully add update datetime", Toast.LENGTH_SHORT).show();
-                } else {
-                    bUPDATE_DATA = false;
-                    TxtLineLog.append("Update datetime failed...\n");
-                }
+                bUPDATE_DATA = result > 0;
                 //------------------------------------------------------------------------------------------
             } else {
                 Log.d(TAG, "Connection failed");

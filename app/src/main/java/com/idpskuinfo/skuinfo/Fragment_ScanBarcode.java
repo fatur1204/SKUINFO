@@ -96,6 +96,8 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
         updateHelper.close();
 
         btnSearchData.setOnClickListener(this);
+
+        edtSkuCode.requestFocus();
     }
 
     @Override
@@ -112,18 +114,24 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
                         cursor.moveToFirst();
 
                         //VIEW DATA
+                        edtSkuCode.setText("");
+                        edtSkuCode.requestFocus();
                         TxtSkuNumber.setText(cursor.getString(cursor.getColumnIndex("skuid")));
                         TxtSkuDescription.setText(cursor.getString(cursor.getColumnIndex("description")));
                         TxtSkuRetail.setText(String.format("%,.0f", Float.valueOf(cursor.getString(cursor.getColumnIndex("retailprice")))));
                         //----------------
 
                     } else {
+                        edtSkuCode.requestFocus();
+                        edtSkuCode.selectAll();
                         TxtSkuNumber.setText("Sku Number");
                         TxtSkuDescription.setText("Sku Description");
                         TxtSkuRetail.setText(String.format("%,.0f", Float.valueOf("0")));
                         Toast.makeText(getContext(), "Cannot open data!", Toast.LENGTH_SHORT).show();
                     }
                 } else {
+                    edtSkuCode.requestFocus();
+                    edtSkuCode.selectAll();
                     Toast.makeText(getContext(), "Data Not Match!", Toast.LENGTH_LONG).show();
                 }
             }

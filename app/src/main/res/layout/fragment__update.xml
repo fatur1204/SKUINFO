@@ -129,13 +129,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <EditText
+        <TextView
             android:id="@+id/edtlinelog"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_below="@id/btnupdate"
             android:ems="10"
-            android:lines="12"
             android:textSize="12dp"
             android:fontFamily="monospace"
             android:textColor="#7C7979"
