@@ -14,6 +14,8 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.idpskuinfo.skuinfo.db.CurrencyHelper;
 import com.idpskuinfo.skuinfo.db.SkuHelper;
 import com.idpskuinfo.skuinfo.setting.SettingActivity;
+import com.idpskuinfo.skuinfo.setting.SettingModel;
+import com.idpskuinfo.skuinfo.setting.SettingPreference;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -21,6 +23,10 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     private BottomNavigationView navigation;
     private SkuHelper skuHelper;
     private CurrencyHelper currencyHelper;
+
+    private Fragment_Update fragment_update;
+    private SettingModel settingModel;
+    private SettingPreference settingPreference;
 
     private boolean loadFragment(Fragment fragment) {
         Log.d(TAG, "frag_name : " + fragment);
@@ -58,19 +64,19 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         Fragment fragment = null;
         switch (item.getItemId()) {
-            case R.id.navigation_movies:
+            case R.id.navigation_scan:
                 bundle.putInt("message", 0);
                 getSupportActionBar().setTitle("Scan Barcode");
                 fragment = new Fragment_ScanBarcode();
                 break;
 
-            case R.id.navigation_tvshow:
+            case R.id.navigation_rate:
                 bundle.putInt("message", 0);
                 getSupportActionBar().setTitle("Exchange Rate");
                 fragment = new Fragment_ListRate();
                 break;
 
-            case R.id.navigation_favorite:
+            case R.id.navigation_update:
                 getSupportActionBar().setTitle("Update");
                 fragment = new Fragment_Update();
                 break;

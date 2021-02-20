@@ -32,8 +32,6 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
@@ -54,6 +52,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
     ProgressDialog progressDialog;
     private Boolean bSKUMASTER, bCURRENCY, bUPDATE_DATA, bCONNECTION = false;
     private TextView TxtLineLog;
+    private int skucount, readersku;
 
     private SettingModel settingModel;
     private SettingPreference settingPreference;
@@ -128,6 +127,8 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             TxtLineLog.setText("");
             Log.d(TAG, "start 1");
             //downloadata();
+            btnupdate.setEnabled(false);
+            showExistingPreference();
             new LoadTask().execute();
         }
     }
@@ -165,7 +166,6 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
 
 
                 //Load data SKU MASTER----------------------------------------------------------------------
-                Log.d(TAG, "start 2");
                 Cursor qrycek = skuHelper.queryAll();
                 if (qrycek.getCount() > 0) {
                     if (qrycek != null) {
@@ -185,6 +185,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                     //reader = new BufferedReader(new InputStreamReader(getActivity().getAssets().open("skumaster.txt"), "UTF-8"));
                     File file = new File(getActivity().getFilesDir().toString(), "skumaster.txt");
                     reader = new BufferedReader(new FileReader(file));
+                    readersku =0;
                     while ((mLine = reader.readLine()) != null) {
                         //Log.d(TAG, "DATAKU : " + mLine);
                         String SkuMaster = mLine.trim();
@@ -206,6 +207,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                         } else {
                             bSKUMASTER = false;
                         }
+                        readersku ++;
                     }
                 } catch (IOException e) {
                     //log the exception
@@ -322,20 +324,29 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             progressDialog.dismiss();
             Log.d(TAG + " onPostExecute", "" + result);
 
+            int datasku = skuHelper.queryAll().getCount();
+
             ftpclient.ftpDisconnect();
             skuHelper.close();
             currencyHelper.close();
             updateHelper.close();
 
+            btnupdate.setEnabled(true);
 
             if (!bCONNECTION) {
                 Toast.makeText(getContext(), "Connection into ftp failed!", Toast.LENGTH_LONG).show();
             } else {
-                if ((bSKUMASTER = true) && (bCURRENCY = true) && (bUPDATE_DATA = true)) {
-                    TxtLineLog.append("Update data sucessfully...\n");
-                    TxtLineLog.append("disconnect...\n");
-                    Toast.makeText(getContext(), "Update complete", Toast.LENGTH_LONG).show();
-                } else {
+                if(datasku==readersku){
+                    if ((bSKUMASTER = true) && (bCURRENCY = true) && (bUPDATE_DATA = true)) {
+                        TxtLineLog.append("Update data sucessfully...\n");
+                        TxtLineLog.append("disconnect...\n");
+                        Toast.makeText(getContext(), "Update complete", Toast.LENGTH_LONG).show();
+                    } else {
+                        TxtLineLog.append("Update data failed...\n");
+                        TxtLineLog.append("disconnect...\n");
+                        Toast.makeText(getContext(), "Update failed", Toast.LENGTH_LONG).show();
+                    }
+                }else{
                     TxtLineLog.append("Update data failed...\n");
                     TxtLineLog.append("disconnect...\n");
                     Toast.makeText(getContext(), "Update failed", Toast.LENGTH_LONG).show();
@@ -366,4 +377,5 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
         TxtUserName.setText(username);
         TxtPassword.setText(password);
     }
+
 }

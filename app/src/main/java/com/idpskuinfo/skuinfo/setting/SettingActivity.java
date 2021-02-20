@@ -45,6 +45,7 @@ public class SettingActivity extends AppCompatActivity implements View.OnClickLi
 
     }
 
+
     private void setActionBarTitle(String title) {
         if (getSupportActionBar() != null) {
             getSupportActionBar().setTitle(title);

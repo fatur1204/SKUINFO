@@ -3,6 +3,7 @@ package com.idpskuinfo.skuinfo;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -95,9 +96,19 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
         currencyHelper.close();
         updateHelper.close();
 
+        edtSkuCode.requestFocus();
         btnSearchData.setOnClickListener(this);
 
-        edtSkuCode.requestFocus();
+        edtSkuCode.setOnKeyListener(new View.OnKeyListener() {
+            @Override
+            public boolean onKey(View v, int keyCode, KeyEvent event) {
+                if(keyCode==KeyEvent.KEYCODE_ENTER){
+                    showDataSku();
+                    return true;
+                }
+                return false;
+            }
+        });
     }
 
     @Override
@@ -107,34 +118,38 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
                 edtSkuCode.requestFocus();
                 edtSkuCode.setError("Upc/SKU Can't empty!");
             } else {
-                Cursor cursor = skuHelper.queryById(String.valueOf(edtSkuCode.getText()));
-                Log.d(TAG, "counter : " + cursor.getCount());
-                if (cursor.getCount() > 0) {
-                    if (cursor != null) {
-                        cursor.moveToFirst();
-
-                        //VIEW DATA
-                        edtSkuCode.setText("");
-                        edtSkuCode.requestFocus();
-                        TxtSkuNumber.setText(cursor.getString(cursor.getColumnIndex("skuid")));
-                        TxtSkuDescription.setText(cursor.getString(cursor.getColumnIndex("description")));
-                        TxtSkuRetail.setText(String.format("%,.0f", Float.valueOf(cursor.getString(cursor.getColumnIndex("retailprice")))));
-                        //----------------
-
-                    } else {
-                        edtSkuCode.requestFocus();
-                        edtSkuCode.selectAll();
-                        TxtSkuNumber.setText("Sku Number");
-                        TxtSkuDescription.setText("Sku Description");
-                        TxtSkuRetail.setText(String.format("%,.0f", Float.valueOf("0")));
-                        Toast.makeText(getContext(), "Cannot open data!", Toast.LENGTH_SHORT).show();
-                    }
-                } else {
-                    edtSkuCode.requestFocus();
-                    edtSkuCode.selectAll();
-                    Toast.makeText(getContext(), "Data Not Match!", Toast.LENGTH_LONG).show();
-                }
+                showDataSku();
             }
+        }
+    }
+
+    private void showDataSku(){
+        Cursor cursor = skuHelper.queryById(String.valueOf(edtSkuCode.getText()));
+        Log.d(TAG, "counter : " + cursor.getCount());
+        if (cursor.getCount() > 0) {
+            if (cursor != null) {
+                cursor.moveToFirst();
+
+                //VIEW DATA
+                edtSkuCode.setText("");
+                edtSkuCode.requestFocus();
+                TxtSkuNumber.setText(cursor.getString(cursor.getColumnIndex("skuid")));
+                TxtSkuDescription.setText(cursor.getString(cursor.getColumnIndex("description")));
+                TxtSkuRetail.setText(String.format("%,.0f", Float.valueOf(cursor.getString(cursor.getColumnIndex("retailprice")))));
+                //----------------
+
+            } else {
+                edtSkuCode.requestFocus();
+                edtSkuCode.selectAll();
+                TxtSkuNumber.setText("Sku Number");
+                TxtSkuDescription.setText("Sku Description");
+                TxtSkuRetail.setText(String.format("%,.0f", Float.valueOf("0")));
+                Toast.makeText(getContext(), "Cannot open data!", Toast.LENGTH_SHORT).show();
+            }
+        } else {
+            edtSkuCode.requestFocus();
+            edtSkuCode.selectAll();
+            Toast.makeText(getContext(), "Data Not Match!", Toast.LENGTH_LONG).show();
         }
     }
 }

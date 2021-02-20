@@ -2,7 +2,7 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/navigation_movies"
+        android:id="@+id/navigation_scan"
         android:icon="@drawable/ic_scan"
         android:color="#FFFFFF"
         android:tint="#FFFFFF"
@@ -12,7 +12,7 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/navigation_tvshow"
+        android:id="@+id/navigation_rate"
         android:icon="@drawable/ic_rate"
         android:color="#FFFFFF"
         android:tint="#FFFFFF"
@@ -21,7 +21,7 @@
         app:showAsAction="ifRoom" />
 
     <item
-        android:id="@+id/navigation_favorite"
+        android:id="@+id/navigation_update"
         android:icon="@drawable/ic_update"
         android:color="#FFFFFF"
         android:tint="#FFFFFF"
