@@ -108,8 +108,9 @@
         android:layout_below="@+id/ln01"
         android:text="Download and Update"
         android:textAllCaps="false"
-        android:backgroundTint="#EA4A4A"
+        android:backgroundTint="#E44343"
         android:textSize="16dp"
+        android:drawableLeft="@drawable/ic_updatbtn"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 

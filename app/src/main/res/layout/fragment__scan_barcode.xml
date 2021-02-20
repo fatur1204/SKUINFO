@@ -36,6 +36,8 @@
             android:text="Search Data"
             android:textSize="20dp"
             android:textAllCaps="false"
+            android:backgroundTint="#E44343"
+            android:drawableLeft="@drawable/ic_search"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
     </LinearLayout>
@@ -112,6 +114,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:backgroundTint="#F6EAEA"
+            android:layout_marginBottom="10dp"
             android:background="@drawable/button_border"
             card_view:cardCornerRadius="20dp">
 
@@ -171,7 +174,5 @@
 
             </FrameLayout>
         </androidx.cardview.widget.CardView>
-
     </LinearLayout>
-
 </RelativeLayout>
