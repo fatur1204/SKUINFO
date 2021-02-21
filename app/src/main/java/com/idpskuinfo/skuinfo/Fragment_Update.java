@@ -339,6 +339,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 if(datasku==readersku){
                     if ((bSKUMASTER = true) && (bCURRENCY = true) && (bUPDATE_DATA = true)) {
                         TxtLineLog.append("Update data sucessfully...\n");
+                        TxtLineLog.append("sku upload : "+datasku+"...\n");
                         TxtLineLog.append("disconnect...\n");
                         Toast.makeText(getContext(), "Update complete", Toast.LENGTH_LONG).show();
                     } else {

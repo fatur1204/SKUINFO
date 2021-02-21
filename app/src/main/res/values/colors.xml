@@ -14,4 +14,5 @@
     <color name="textOnPrimary">#000000</color>
     <color name="colorAccent">#C52A3C</color>
     <color name="bluedark">#F8F7F7</color>
+    <color name="colorBg">#FFFAFA</color>
 </resources>

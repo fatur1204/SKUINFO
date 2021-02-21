@@ -1,5 +1,6 @@
 package com.idpskuinfo.skuinfo;
 
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.util.Log;
@@ -12,6 +13,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
 import com.idpskuinfo.skuinfo.db.CurrencyHelper;
@@ -20,7 +22,7 @@ import com.idpskuinfo.skuinfo.db.UpdateHelper;
 
 public class Fragment_ScanBarcode extends Fragment implements View.OnClickListener {
     EditText edtSkuCode;
-    Button btnSearchData;
+    Button btnSearchData, btnClear;
     SkuHelper skuHelper;
     CurrencyHelper currencyHelper;
     UpdateHelper updateHelper;
@@ -66,6 +68,7 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
         TxtLastRate = view.findViewById(R.id.edtlastrate);
         TxtLastUpdate = view.findViewById(R.id.edtlastupdate);
         TxtTimeUpdate = view.findViewById(R.id.edttimeupdate);
+        btnClear = view.findViewById(R.id.btnclear);
 
         TxtSkuNumber.setText("Sku Number");
         TxtSkuDescription.setText("Sku Description");
@@ -98,6 +101,7 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
 
         edtSkuCode.requestFocus();
         btnSearchData.setOnClickListener(this);
+        btnClear.setOnClickListener(this);
 
         edtSkuCode.setOnKeyListener(new View.OnKeyListener() {
             @Override
@@ -105,8 +109,9 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
                 if(keyCode==KeyEvent.KEYCODE_ENTER){
                     showDataSku();
                     return true;
+                }else{
+                    return false;
                 }
-                return false;
             }
         });
     }
@@ -115,11 +120,16 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
     public void onClick(View v) {
         if (v.getId() == R.id.btnsearch) {
             if (edtSkuCode.length() == 0) {
-                edtSkuCode.requestFocus();
-                edtSkuCode.setError("Upc/SKU Can't empty!");
+                //edtSkuCode.requestFocus();
+                //edtSkuCode.setError("Upc/SKU Can't empty!");
+                Intent mIntent = new Intent(getContext(), ScannerActivity.class);
+                startActivityForResult(mIntent, ScannerActivity.EXTRA_DATA);
             } else {
                 showDataSku();
             }
+        }else if(v.getId() == R.id.btnclear){
+            edtSkuCode.setText("");
+            edtSkuCode.requestFocus();
         }
     }
 
@@ -151,5 +161,19 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
             edtSkuCode.selectAll();
             Toast.makeText(getContext(), "Data Not Match!", Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        Log.d(TAG, "dataku : " + data);
+
+        if(data != null){
+            String result = data.getStringExtra("RESULT");
+            edtSkuCode.setText(result);
+            showDataSku();
+        }else{
+            super.onActivityResult(requestCode, resultCode, data);
+        }
+
     }
 }
