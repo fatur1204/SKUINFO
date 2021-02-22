@@ -65,23 +65,6 @@ public class ScannerActivity extends AppCompatActivity implements View.OnClickLi
     }
 
     @Override
-    public void onDestroy(){
-        super.onDestroy();
-        mScannerView.stopCameraPreview();
-        mScannerView.stopCamera();
-        mScannerView.destroyDrawingCache();
-        Log.d(TAG, "onDestroy");
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        mScannerView.stopCameraPreview(); //stopPreview
-        mScannerView.stopCamera();
-        Log.d(TAG, "onStop");
-    }
-
-    @Override
     public void onClick(View v) {
         if(v.getId() == R.id.fabflashlight){
             if (!IsActive) {
@@ -94,7 +77,9 @@ public class ScannerActivity extends AppCompatActivity implements View.OnClickLi
                 mScannerView.setFlash(false);
             }
         }else if(v.getId() == R.id.fabclose){
-            finish();
+            mScannerView.stopCameraPreview();
+            mScannerView.stopCamera();
+            onBackPressed();
         }
     }
 

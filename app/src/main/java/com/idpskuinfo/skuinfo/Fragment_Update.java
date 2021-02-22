@@ -53,6 +53,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
     private Boolean bSKUMASTER, bCURRENCY, bUPDATE_DATA, bCONNECTION = false;
     private TextView TxtLineLog;
     private int skucount, readersku;
+    boolean bdata, bdatacurr = false;
 
     private SettingModel settingModel;
     private SettingPreference settingPreference;
@@ -156,160 +157,161 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             bUPDATE_DATA = false;
             bCONNECTION = false;
 
-            status = ftpclient.ftpConnect(hostname, username, password, 21);
+            status = ftpclient.ftpConnect(hostname, username, password, Integer.parseInt(port));
             if (status == true) {
                 bCONNECTION = true;
                 Log.d(TAG, "Connection Success");
                 TxtLineLog.append("ftp status [connected]...\n");
-                ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skumaster.txt", getContext().getFilesDir().toString() + "/skumaster.txt");
-                ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skurate.txt", getContext().getFilesDir().toString() + "/skurate.txt");
+                bdata = ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skumaster.txt", getContext().getFilesDir().toString() + "/skumaster.txt");
+                bdatacurr = ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skurate.txt", getContext().getFilesDir().toString() + "/skurate.txt");
 
-
-                //Load data SKU MASTER----------------------------------------------------------------------
-                Cursor qrycek = skuHelper.queryAll();
-                if (qrycek.getCount() > 0) {
-                    if (qrycek != null) {
-                        long delquery = skuHelper.deleteAll();
-                    }
-                }
-
-
-                BufferedReader reader = null;
-                String mLine = "";
-                int record = 0;
-                String SkuCode = "";
-                String SkuDescription = "";
-                String SkuRetail = "";
-                String SkuType = "";
-                try {
-                    //reader = new BufferedReader(new InputStreamReader(getActivity().getAssets().open("skumaster.txt"), "UTF-8"));
-                    File file = new File(getActivity().getFilesDir().toString(), "skumaster.txt");
-                    reader = new BufferedReader(new FileReader(file));
-                    readersku =0;
-                    while ((mLine = reader.readLine()) != null) {
-                        //Log.d(TAG, "DATAKU : " + mLine);
-                        String SkuMaster = mLine.trim();
-                        String[] SkuMasterList = SkuMaster.split(",");
-                        SkuCode = SkuMasterList[0];
-                        SkuDescription = SkuMasterList[1];
-                        SkuRetail = SkuMasterList[2];
-                        SkuType = SkuMasterList[3];
-
-                        //insert into table sqlite sku master
-                        values.clear();
-                        values.put(DatabaseContract.NoteColumns.SKUID, SkuCode.trim());
-                        values.put(DatabaseContract.NoteColumns.DESCRIPTION, SkuDescription.trim());
-                        values.put(DatabaseContract.NoteColumns.RETAIL_PRICE, SkuRetail.trim());
-                        values.put(DatabaseContract.NoteColumns.SKUTYPE, SkuType.trim());
-                        long result = skuHelper.insert(values);
-                        if (result > 0) {
-                            bSKUMASTER = true;
-                        } else {
-                            bSKUMASTER = false;
-                        }
-                        readersku ++;
-                    }
-                } catch (IOException e) {
-                    //log the exception
-                } finally {
-                    if (reader != null) {
-                        try {
-                            reader.close();
-                        } catch (IOException e) {
-                            //log the exception
+                if(bdata){
+                    //Load data SKU MASTER----------------------------------------------------------------------
+                    Cursor qrycek = skuHelper.queryAll();
+                    if (qrycek.getCount() > 0) {
+                        if (qrycek != null) {
+                            long delquery = skuHelper.deleteAll();
                         }
                     }
-                }
-                //Load data SKU MASTER END------------------------------------------------------------------
-
-                //Load data Currency------------------------------------------------------------------------
-                Cursor qrycek_curr = currencyHelper.queryAll();
-                if (qrycek_curr.getCount() > 0) {
-                    if (qrycek_curr != null) {
-                        long delquery = currencyHelper.deleteAll();
-                    }
-                }
 
 
-                String CurrId = "";
-                String CurrDes = "";
-                String CurrDate = "";
-                String CurrRate = "";
-                int i = 0;
-                try {
-                    //reader = new BufferedReader(
-                    //        new InputStreamReader(getActivity().getAssets().open("curency.txt"), StandardCharsets.UTF_8));
+                    BufferedReader reader = null;
+                    String mLine = "";
+                    int record = 0;
+                    String SkuCode = "";
+                    String SkuDescription = "";
+                    String SkuRetail = "";
+                    String SkuType = "";
+                    try {
+                        //reader = new BufferedReader(new InputStreamReader(getActivity().getAssets().open("skumaster.txt"), "UTF-8"));
+                        File file = new File(getActivity().getFilesDir().toString(), "skumaster.txt");
+                        reader = new BufferedReader(new FileReader(file));
+                        readersku =0;
+                        while ((mLine = reader.readLine()) != null) {
+                            //Log.d(TAG, "DATAKU : " + mLine);
+                            String SkuMaster = mLine.trim();
+                            String[] SkuMasterList = SkuMaster.split(",");
+                            SkuCode = SkuMasterList[0];
+                            SkuDescription = SkuMasterList[1];
+                            SkuRetail = SkuMasterList[2];
+                            SkuType = SkuMasterList[3];
 
-                    File file = new File(getActivity().getFilesDir().toString(), "skurate.txt");
-                    reader = new BufferedReader(new FileReader(file));
-                    // do reading, usually loop until end of file reading
-                    while ((mLine = reader.readLine()) != null) {
-                        String Currency = mLine.trim();
-                        String[] CurrencyList = Currency.split(",");
-                        if (i > 0) {
-                            CurrId = CurrencyList[1];
-                            CurrDes = CurrencyList[0];
-                            CurrRate = CurrencyList[2];
-                        } else {
-                            CurrDate = CurrencyList[0];
-                        }
-
-                        //insert into table sqlite sku master
-                        if (i > 0) {
+                            //insert into table sqlite sku master
                             values.clear();
-                            values.put(DatabaseContract.CurrColumns.CURRID, CurrId.trim());
-                            values.put(DatabaseContract.CurrColumns.CURDES, CurrDes.trim());
-                            values.put(DatabaseContract.CurrColumns.CURRDATE, CurrDate.trim());
-                            values.put(DatabaseContract.CurrColumns.CUR_RET, CurrRate.trim());
-
-                            long result = currencyHelper.insert(values);
+                            values.put(DatabaseContract.NoteColumns.SKUID, SkuCode.trim());
+                            values.put(DatabaseContract.NoteColumns.DESCRIPTION, SkuDescription.trim());
+                            values.put(DatabaseContract.NoteColumns.RETAIL_PRICE, SkuRetail.trim());
+                            values.put(DatabaseContract.NoteColumns.SKUTYPE, SkuType.trim());
+                            long result = skuHelper.insert(values);
                             if (result > 0) {
-                                bCURRENCY = true;
+                                bSKUMASTER = true;
                             } else {
-                                bCURRENCY = false;
+                                bSKUMASTER = false;
+                            }
+                            readersku ++;
+                        }
+                    } catch (IOException e) {
+                        //log the exception
+                    } finally {
+                        if (reader != null) {
+                            try {
+                                reader.close();
+                            } catch (IOException e) {
+                                //log the exception
                             }
                         }
-
-                        i++;
                     }
+                    //Load data SKU MASTER END------------------------------------------------------------------
 
-                } catch (IOException e) {
-                    //log the exception
-                } finally {
-                    if (reader != null) {
-                        try {
-                            reader.close();
-                        } catch (IOException e) {
-                            //log the exception
+                    //Load data Currency------------------------------------------------------------------------
+                    Cursor qrycek_curr = currencyHelper.queryAll();
+                    if (qrycek_curr.getCount() > 0) {
+                        if (qrycek_curr != null) {
+                            long delquery = currencyHelper.deleteAll();
                         }
                     }
-                }
-                //Load data Currency End--------------------------------------------------------------------
 
-                //insert into last update
-                Cursor qrycek_update = updateHelper.queryAll();
-                if (qrycek_update.getCount() > 0) {
-                    if (qrycek_update != null) {
-                        long delquery = updateHelper.deleteAll();
+
+                    String CurrId = "";
+                    String CurrDes = "";
+                    String CurrDate = "";
+                    String CurrRate = "";
+                    int i = 0;
+                    try {
+                        //reader = new BufferedReader(
+                        //        new InputStreamReader(getActivity().getAssets().open("curency.txt"), StandardCharsets.UTF_8));
+
+                        File file = new File(getActivity().getFilesDir().toString(), "skurate.txt");
+                        reader = new BufferedReader(new FileReader(file));
+                        // do reading, usually loop until end of file reading
+                        while ((mLine = reader.readLine()) != null) {
+                            String Currency = mLine.trim();
+                            String[] CurrencyList = Currency.split(",");
+                            if (i > 0) {
+                                CurrId = CurrencyList[1];
+                                CurrDes = CurrencyList[0];
+                                CurrRate = CurrencyList[2];
+                            } else {
+                                CurrDate = CurrencyList[0];
+                            }
+
+                            //insert into table sqlite sku master
+                            if (i > 0) {
+                                values.clear();
+                                values.put(DatabaseContract.CurrColumns.CURRID, CurrId.trim());
+                                values.put(DatabaseContract.CurrColumns.CURDES, CurrDes.trim());
+                                values.put(DatabaseContract.CurrColumns.CURRDATE, CurrDate.trim());
+                                values.put(DatabaseContract.CurrColumns.CUR_RET, CurrRate.trim());
+
+                                long result = currencyHelper.insert(values);
+                                if (result > 0) {
+                                    bCURRENCY = true;
+                                } else {
+                                    bCURRENCY = false;
+                                }
+                            }
+
+                            i++;
+                        }
+
+                    } catch (IOException e) {
+                        //log the exception
+                    } finally {
+                        if (reader != null) {
+                            try {
+                                reader.close();
+                            } catch (IOException e) {
+                                //log the exception
+                            }
+                        }
                     }
-                }
+                    //Load data Currency End--------------------------------------------------------------------
 
-                String dateTime;
-                Date calendar = Calendar.getInstance().getTime();
-                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
-                dateTime = simpleDateFormat.format(calendar.getTime());
-                Log.d(TAG, "time now:" + dateTime);
+                    //insert into last update
+                    Cursor qrycek_update = updateHelper.queryAll();
+                    if (qrycek_update.getCount() > 0) {
+                        if (qrycek_update != null) {
+                            long delquery = updateHelper.deleteAll();
+                        }
+                    }
 
-                values.clear();
-                values.put(DatabaseContract.UpdateColumns.UPDATEDATE, CurrDate.trim());
-                values.put(DatabaseContract.UpdateColumns.UPDATETIME, dateTime);
-                long result = updateHelper.insert(values);
-                if (result > 0) {
-                    bUPDATE_DATA = true;
-                } else {
-                    bUPDATE_DATA = false;
+                    String dateTime;
+                    Date calendar = Calendar.getInstance().getTime();
+                    SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+                    dateTime = simpleDateFormat.format(calendar.getTime());
+                    Log.d(TAG, "time now:" + dateTime);
+
+                    values.clear();
+                    values.put(DatabaseContract.UpdateColumns.UPDATEDATE, CurrDate.trim());
+                    values.put(DatabaseContract.UpdateColumns.UPDATETIME, dateTime);
+                    long result = updateHelper.insert(values);
+                    if (result > 0) {
+                        bUPDATE_DATA = true;
+                    } else {
+                        bUPDATE_DATA = false;
+                    }
+                    //------------------------------------------------------------------------------------------
                 }
-                //------------------------------------------------------------------------------------------
             } else {
                 Log.d(TAG, "Connection failed");
                 TxtLineLog.append("Connection ftp failed...\n");
@@ -334,26 +336,31 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             btnupdate.setEnabled(true);
 
             if (!bCONNECTION) {
-                Toast.makeText(getContext(), "Connection into ftp failed!", Toast.LENGTH_LONG).show();
+                Toast.makeText(getContext(), "Connection ftp failed!", Toast.LENGTH_LONG).show();
             } else {
-                if(datasku==readersku){
-                    if ((bSKUMASTER = true) && (bCURRENCY = true) && (bUPDATE_DATA = true)) {
-                        TxtLineLog.append("Update data sucessfully...\n");
-                        TxtLineLog.append("sku upload : "+datasku+"...\n");
-                        TxtLineLog.append("disconnect...\n");
-                        Toast.makeText(getContext(), "Update complete", Toast.LENGTH_LONG).show();
-                    } else {
+                if(bdata){
+                    if(datasku==readersku){
+                        if ((bSKUMASTER = true) && (bCURRENCY = true) && (bUPDATE_DATA = true)) {
+                            TxtLineLog.append("Update data sucessfully...\n");
+                            TxtLineLog.append("sku upload : "+datasku+"...\n");
+                            TxtLineLog.append("disconnect...\n");
+                            Toast.makeText(getContext(), "Update complete", Toast.LENGTH_LONG).show();
+                        } else {
+                            TxtLineLog.append("Update data failed...\n");
+                            TxtLineLog.append("disconnect...\n");
+                            Toast.makeText(getContext(), "Update failed", Toast.LENGTH_LONG).show();
+                        }
+                    }else{
                         TxtLineLog.append("Update data failed...\n");
                         TxtLineLog.append("disconnect...\n");
                         Toast.makeText(getContext(), "Update failed", Toast.LENGTH_LONG).show();
                     }
                 }else{
-                    TxtLineLog.append("Update data failed...\n");
+                    TxtLineLog.append("File doesn't exists...\n");
                     TxtLineLog.append("disconnect...\n");
                     Toast.makeText(getContext(), "Update failed", Toast.LENGTH_LONG).show();
                 }
             }
-
         }
     }
 
