@@ -8,10 +8,8 @@ import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPFile;
 import org.apache.commons.net.ftp.FTPReply;
 
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.OutputStream;
 
 public class MyFTPClientFunctions {
     // Now, declare a public FTP client object.
@@ -103,10 +101,12 @@ public class MyFTPClientFunctions {
             fileList = new String[length];
             for (int i = 0; i < length; i++) {
                 String name = ftpFiles[i].getName();
+                long filesize = ftpFiles[i].getSize();
                 boolean isFile = ftpFiles[i].isFile();
 
                 if (isFile) {
                     fileList[i] = "File :: " + name;
+                    //Log.i(TAG, "file size : "+filesize);
                     Log.i(TAG, "File : " + name);
                 } else {
                     fileList[i] = "Directory :: " + name;
@@ -117,6 +117,23 @@ public class MyFTPClientFunctions {
         } catch (Exception e) {
             e.printStackTrace();
             return fileList;
+        }
+    }
+
+    public long ftpPrintFilesListsize(String dir_path) {
+        long fileList = 0;
+        long filesize = 0;
+        try {
+            FTPFile[] ftpFiles = mFTPClient.listFiles(dir_path);
+            int length = ftpFiles.length;
+            filesize = 0;
+            for (int i = 0; i < length; i++) {
+                filesize = ftpFiles[i].getSize();
+            }
+            return filesize;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return filesize;
         }
     }
 

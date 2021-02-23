@@ -24,12 +24,7 @@ import com.idpskuinfo.skuinfo.ftp.MyFTPClientFunctions;
 import com.idpskuinfo.skuinfo.setting.SettingModel;
 import com.idpskuinfo.skuinfo.setting.SettingPreference;
 
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.net.ftp.FTPFile;
-
 import java.io.File;
-import java.io.IOException;
 
 public class Fragment_Update extends Fragment implements View.OnClickListener {
     private static final String TAG = Fragment_Update.class.getSimpleName();
@@ -135,13 +130,14 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
         @Override
         protected void onPreExecute() {
 
-            /*progressDialog = new ProgressDialog(getContext());
+            progressDialog = new ProgressDialog(getContext());
+            progressDialog.setMessage("File downloading ...");
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             progressDialog.setCancelable(false);
             progressDialog.setMax(100);
-            progressDialog.show();*/
+            progressDialog.show();
 
-            progressDialog = ProgressDialog.show(getContext(), "Please Wait!", "Process Download and Update...", false, false);
+            //progressDialog = ProgressDialog.show(getContext(), "Please Wait!", "Process Download and Update...", false, false);
             File file_sku = new File(getContext().getFilesDir().toString(), "skumaster.txt");
             file_sku.delete();
             File file_rate = new File(getContext().getFilesDir().toString(), "skurate.txt");
@@ -153,6 +149,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
         protected Boolean doInBackground(String... strings) {
             Log.d(TAG + " DoINBackGround", "On doInBackground...");
             boolean status = false;
+            int count = 0;
             bSKUMASTER = false;
             bCURRENCY = false;
             bUPDATE_DATA = false;
@@ -164,6 +161,9 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 Log.d(TAG, "Connection Success");
 
                 TxtLineLog.append("ftp status [connected]...\n");
+
+                long sizesku = ftpclient.ftpPrintFilesListsize("/skumaster.txt");
+
                 bdata = ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skumaster.txt", getContext().getFilesDir().toString() + "/skumaster.txt");
                 bdatacurr = ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skurate.txt", getContext().getFilesDir().toString() + "/skurate.txt");
             } else {
@@ -175,7 +175,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
         }
 
         @Override
-        protected void onProgressUpdate(Integer... values){
+        protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
             progressDialog.setProgress(values[0]);
         }
@@ -191,7 +191,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             if (!bCONNECTION) {
                 Toast.makeText(getContext(), "Connection ftp failed!", Toast.LENGTH_LONG).show();
             } else {
-                if (bdata) {
+                if ((bdata = true) && (bdatacurr = true)) {
                     TxtLineLog.append("Download data sucessfully...\n");
                     TxtLineLog.append("disconnect...\n");
                     ftpclient.ftpDisconnect();
