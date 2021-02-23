@@ -184,7 +184,8 @@ public class MyFTPClientFunctions {
         boolean status = false;
         try {
             FileOutputStream desFileStream = new FileOutputStream(desFilePath);
-            status = mFTPClient.retrieveFile("/"+srcFilePath, desFileStream);
+            mFTPClient.setBufferSize(1024*1024);
+            status = mFTPClient.retrieveFile(srcFilePath, desFileStream);
             desFileStream.close();
 
             return status;

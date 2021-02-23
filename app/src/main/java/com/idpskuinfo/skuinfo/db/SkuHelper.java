@@ -6,8 +6,15 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.database.sqlite.SQLiteStatement;
+
+import com.idpskuinfo.skuinfo.data.SkuModel;
 
 import static com.idpskuinfo.skuinfo.db.DatabaseContract.TABLE_NAME;
+import static com.idpskuinfo.skuinfo.db.DatabaseContract.NoteColumns.SKUID;
+import static com.idpskuinfo.skuinfo.db.DatabaseContract.NoteColumns.DESCRIPTION;
+import static com.idpskuinfo.skuinfo.db.DatabaseContract.NoteColumns.RETAIL_PRICE;
+import static com.idpskuinfo.skuinfo.db.DatabaseContract.NoteColumns.SKUTYPE;
 
 public class SkuHelper {
     private static final String DATABASE_TABLE = TABLE_NAME;
@@ -65,6 +72,26 @@ public class SkuHelper {
 
     public long insert(ContentValues values) {
         return database.insert(DATABASE_TABLE, null, values);
+    }
+
+    public void beginTransaction() {
+        database.beginTransaction();
+    }
+    public void setTransactionSuccess() {
+        database.setTransactionSuccessful();
+    }
+    public void endTransaction() {
+        database.endTransaction();
+    }
+    public void insertTransaction(SkuModel skuModel) {
+        String sql = "INSERT INTO " + TABLE_NAME + " (" + SKUID + ", " + DESCRIPTION + ", "+ RETAIL_PRICE  +", "+ SKUTYPE +") VALUES (?, ?, ?, ?)";
+        SQLiteStatement stmt = database.compileStatement(sql);
+        stmt.bindString(1, skuModel.getSkucode());
+        stmt.bindString(2, skuModel.getSkudes());
+        stmt.bindString(3, skuModel.getSkuret());
+        stmt.bindString(4, skuModel.getSkutype());
+        stmt.execute();
+        stmt.clearBindings();
     }
 
     public int update(String id, ContentValues values) {
