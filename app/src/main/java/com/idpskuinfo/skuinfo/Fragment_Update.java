@@ -20,6 +20,8 @@ import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.idpskuinfo.skuinfo.data.LoadActivity;
+import com.idpskuinfo.skuinfo.db.CurrencyHelper;
+import com.idpskuinfo.skuinfo.db.SkuHelper;
 import com.idpskuinfo.skuinfo.ftp.MyFTPClientFunctions;
 import com.idpskuinfo.skuinfo.setting.SettingModel;
 import com.idpskuinfo.skuinfo.setting.SettingPreference;
@@ -44,6 +46,9 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
     private SettingModel settingModel;
     private SettingPreference settingPreference;
     private MyFTPClientFunctions ftpclient = null;
+    private SkuHelper skuHelper;
+    private CurrencyHelper currencyHelper;
+    public static int RECORD_UPDATE = 0;
 
     public Fragment_Update() {
         // Required empty public constructor
@@ -136,7 +141,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             progressDialog.setMax(100);
             progressDialog.show();*/
 
-            progressDialog = ProgressDialog.show(getContext(), "Please Wait!", "Process Download and Update...", false, false);
+            progressDialog = ProgressDialog.show(getContext(), "Please Wait!", "Process Download...", false, false);
             File file_sku = new File(getContext().getFilesDir().toString(), "skumaster.txt");
             file_sku.delete();
             File file_rate = new File(getContext().getFilesDir().toString(), "skurate.txt");
@@ -159,10 +164,10 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 bCONNECTION = true;
                 Log.d(TAG, "Connection Success");
                 TxtLineLog.append("ftp status [connected]...\n");
-                long sizesku = ftpclient.ftpPrintFilesListsize("/skumaster.txt");
+                long sizesku = ftpclient.ftpPrintFilesListsize("/SKUINFO/skumaster.txt");
 
-                bdata = ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skumaster.txt", getContext().getFilesDir().toString() + "/skumaster.txt");
-                bdatacurr = ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skurate.txt", getContext().getFilesDir().toString() + "/skurate.txt");
+                bdata = ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "SKUINFO/skumaster.txt", getContext().getFilesDir().toString() + "/skumaster.txt");
+                bdatacurr = ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "SKUINFO/skurate.txt", getContext().getFilesDir().toString() + "/skurate.txt");
 
             } else {
                 Log.d(TAG, "Connection failed");
@@ -195,7 +200,8 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                     ftpclient.ftpDisconnect();
 
                     Intent mIntent = new Intent(getContext(), LoadActivity.class);
-                    startActivity(mIntent);
+                    //startActivity(mIntent);
+                    startActivityForResult(mIntent, LoadActivity.NUMBER_RESULT);
                 } else {
                     TxtLineLog.append("File doesn't exists...\n");
                     TxtLineLog.append("disconnect...\n");
@@ -203,6 +209,39 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                     Toast.makeText(getContext(), "File doesn't exists", Toast.LENGTH_LONG).show();
                 }
             }
+        }
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data)
+    {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.d(TAG, "resultcode : "+resultCode);
+        Log.d(TAG, "requestcode : "+requestCode);
+
+        if(requestCode==101){
+            skuHelper = skuHelper.getInstance(getContext());
+            skuHelper.open();
+            currencyHelper = currencyHelper.getInstance(getContext());
+            currencyHelper.open();
+
+            int totalcount = skuHelper.queryAll().getCount();
+            TxtLineLog.append("total sku update : "+totalcount+"\n");
+            int totalrate = currencyHelper.queryAll().getCount();
+            TxtLineLog.append("total rate update : "+totalrate+"\n");
+
+            int total_record = RECORD_UPDATE;
+            Log.d(TAG, "total : "+total_record);
+
+            if(totalcount!=total_record){
+                TxtLineLog.append("update data failed...");
+            }else{
+                TxtLineLog.append("update data successfully...[finish]");
+            }
+
+            skuHelper.close();
+            currencyHelper.close();
         }
     }
 }

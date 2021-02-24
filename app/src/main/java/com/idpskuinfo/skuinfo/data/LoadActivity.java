@@ -31,6 +31,7 @@ public class LoadActivity extends AppCompatActivity implements HandlerCallback {
     Messenger mBoundService;
     boolean mServiceBound;
     private ProgressBar progressBar;
+    public static final int NUMBER_RESULT = 101;
 
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
@@ -72,6 +73,11 @@ public class LoadActivity extends AppCompatActivity implements HandlerCallback {
         file_rate.delete();
 
         unbindService(mServiceConnection);
+        
+        Intent intent=new Intent();
+        intent.putExtra("MESSAGE", "DATA TERKIRIM");
+        setResult(NUMBER_RESULT,intent);
+        finish();
     }
 
     @Override

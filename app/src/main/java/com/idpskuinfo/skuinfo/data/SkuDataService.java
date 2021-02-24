@@ -13,6 +13,7 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.idpskuinfo.skuinfo.Fragment_Update;
 import com.idpskuinfo.skuinfo.db.CurrencyHelper;
 import com.idpskuinfo.skuinfo.db.DatabaseContract;
 import com.idpskuinfo.skuinfo.db.SkuHelper;
@@ -320,6 +321,7 @@ public class SkuDataService extends Service {
                     skuModel.setSkutype(splitstr[3].trim());
                     skuModels.add(skuModel);
                 }
+                Fragment_Update.RECORD_UPDATE = skuModels.size();
             } catch (Exception e) {
                 e.printStackTrace();
             }
