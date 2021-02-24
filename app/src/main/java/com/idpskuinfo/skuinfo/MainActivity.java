@@ -11,22 +11,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.idpskuinfo.skuinfo.db.CurrencyHelper;
-import com.idpskuinfo.skuinfo.db.SkuHelper;
 import com.idpskuinfo.skuinfo.setting.SettingActivity;
-import com.idpskuinfo.skuinfo.setting.SettingModel;
-import com.idpskuinfo.skuinfo.setting.SettingPreference;
 
 public class MainActivity extends AppCompatActivity implements BottomNavigationView.OnNavigationItemSelectedListener {
     private static final String TAG = MainActivity.class.getSimpleName();
     private Bundle bundle = new Bundle();
     private BottomNavigationView navigation;
-    private SkuHelper skuHelper;
-    private CurrencyHelper currencyHelper;
-
-    private Fragment_Update fragment_update;
-    private SettingModel settingModel;
-    private SettingPreference settingPreference;
 
     private boolean loadFragment(Fragment fragment) {
         Log.d(TAG, "frag_name : " + fragment);

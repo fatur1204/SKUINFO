@@ -16,8 +16,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SKUINFO"
         android:usesCleartextTraffic="true">
-        <activity android:name=".data.LoadActivity"
-            android:screenOrientation="portrait" ></activity>
+        <activity android:name=".splashscreen.SplashScreenActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".data.LoadActivity"
+            android:screenOrientation="portrait" />
 
         <service
             android:name=".data.SkuDataService"
@@ -38,11 +48,7 @@
             android:name=".MainActivity"
             android:launchMode="singleTop"
             android:screenOrientation="portrait">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
     </application>
 
