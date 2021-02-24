@@ -48,7 +48,7 @@ public class CurrencyHelper {
                 null,
                 null,
                 null,
-                DatabaseContract.CurrColumns.CURRID + " ASC");
+                null); //DatabaseContract.CurrColumns.CURRID + " ASC");
     }
 
     public Cursor queryById(String id) {

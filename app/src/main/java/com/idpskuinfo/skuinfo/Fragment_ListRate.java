@@ -38,6 +38,9 @@ public class Fragment_ListRate extends Fragment implements LoadCurrencyCallback 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        currencyHelper = CurrencyHelper.getInstance(getContext());
+        currencyHelper.open();
     }
 
     @Override
@@ -50,9 +53,6 @@ public class Fragment_ListRate extends Fragment implements LoadCurrencyCallback 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-        currencyHelper = CurrencyHelper.getInstance(getContext());
-        currencyHelper.open();
 
         recyclerView = view.findViewById(R.id.rv_listrate);
         progressBar = view.findViewById(R.id.progress_bar);
