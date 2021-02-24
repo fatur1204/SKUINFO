@@ -1,7 +1,5 @@
 package com.idpskuinfo.skuinfo.data;
 
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.ComponentName;
 import android.content.Intent;
 import android.content.ServiceConnection;
@@ -12,43 +10,61 @@ import android.os.Message;
 import android.os.Messenger;
 import android.util.Log;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
-import com.idpskuinfo.skuinfo.MainActivity;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.idpskuinfo.skuinfo.R;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
 
-import static com.idpskuinfo.skuinfo.data.SkuDataService.PREPARATION_MESSAGE;
-import static com.idpskuinfo.skuinfo.data.SkuDataService.UPDATE_MESSAGE;
-import static com.idpskuinfo.skuinfo.data.SkuDataService.FAILED_MESSAGE;
-import static com.idpskuinfo.skuinfo.data.SkuDataService.SUCCESS_MESSAGE;
 import static com.idpskuinfo.skuinfo.data.SkuDataService.CANCEL_MESSAGE;
+import static com.idpskuinfo.skuinfo.data.SkuDataService.FAILED_MESSAGE;
+import static com.idpskuinfo.skuinfo.data.SkuDataService.PREPARATION_MESSAGE;
+import static com.idpskuinfo.skuinfo.data.SkuDataService.SUCCESS_MESSAGE;
+import static com.idpskuinfo.skuinfo.data.SkuDataService.UPDATE_MESSAGE;
+
+interface HandlerCallback {
+    void preparation();
+
+    void updateProgress(long progress);
+
+    void loadSuccess();
+
+    void loadFailed();
+
+    void loadCancel();
+}
 
 public class LoadActivity extends AppCompatActivity implements HandlerCallback {
+    public static final int NUMBER_RESULT = 101;
     Messenger mBoundService;
     boolean mServiceBound;
-    private ProgressBar progressBar;
-    public static final int NUMBER_RESULT = 101;
-
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceDisconnected(ComponentName name) {
             mServiceBound = false;
         }
+
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             mBoundService = new Messenger(service);
             mServiceBound = true;
         }
     };
-
+    private ProgressBar progressBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_load);
 
         progressBar = findViewById(R.id.progress_bar);
@@ -74,9 +90,9 @@ public class LoadActivity extends AppCompatActivity implements HandlerCallback {
 
         unbindService(mServiceConnection);
 
-        Intent intent=new Intent();
+        Intent intent = new Intent();
         intent.putExtra("MESSAGE", "DATA TERKIRIM");
-        setResult(NUMBER_RESULT,intent);
+        setResult(NUMBER_RESULT, intent);
         finish();
     }
 
@@ -111,9 +127,11 @@ public class LoadActivity extends AppCompatActivity implements HandlerCallback {
 
     private static class IncomingHandler extends Handler {
         WeakReference<HandlerCallback> weakCallback;
+
         IncomingHandler(HandlerCallback callback) {
             weakCallback = new WeakReference<>(callback);
         }
+
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -137,12 +155,4 @@ public class LoadActivity extends AppCompatActivity implements HandlerCallback {
             }
         }
     }
-}
-
-interface HandlerCallback {
-    void preparation();
-    void updateProgress(long progress);
-    void loadSuccess();
-    void loadFailed();
-    void loadCancel();
 }
