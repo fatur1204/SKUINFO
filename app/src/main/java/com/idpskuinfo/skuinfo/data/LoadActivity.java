@@ -73,7 +73,7 @@ public class LoadActivity extends AppCompatActivity implements HandlerCallback {
         file_rate.delete();
 
         unbindService(mServiceConnection);
-        
+
         Intent intent=new Intent();
         intent.putExtra("MESSAGE", "DATA TERKIRIM");
         setResult(NUMBER_RESULT,intent);
