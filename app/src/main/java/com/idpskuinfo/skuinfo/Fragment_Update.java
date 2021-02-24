@@ -129,15 +129,14 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
 
         @Override
         protected void onPreExecute() {
-
-            progressDialog = new ProgressDialog(getContext());
+            /*progressDialog = new ProgressDialog(getContext());
             progressDialog.setMessage("File downloading ...");
             progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
             progressDialog.setCancelable(false);
             progressDialog.setMax(100);
-            progressDialog.show();
+            progressDialog.show();*/
 
-            //progressDialog = ProgressDialog.show(getContext(), "Please Wait!", "Process Download and Update...", false, false);
+            progressDialog = ProgressDialog.show(getContext(), "Please Wait!", "Process Download and Update...", false, false);
             File file_sku = new File(getContext().getFilesDir().toString(), "skumaster.txt");
             file_sku.delete();
             File file_rate = new File(getContext().getFilesDir().toString(), "skurate.txt");
@@ -159,13 +158,12 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             if (status == true) {
                 bCONNECTION = true;
                 Log.d(TAG, "Connection Success");
-
                 TxtLineLog.append("ftp status [connected]...\n");
-
                 long sizesku = ftpclient.ftpPrintFilesListsize("/skumaster.txt");
 
                 bdata = ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skumaster.txt", getContext().getFilesDir().toString() + "/skumaster.txt");
                 bdatacurr = ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "skurate.txt", getContext().getFilesDir().toString() + "/skurate.txt");
+
             } else {
                 Log.d(TAG, "Connection failed");
                 TxtLineLog.append("Connection ftp failed...\n");

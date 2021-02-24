@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.idpskuinfo.skuinfo.MainActivity;
 import com.idpskuinfo.skuinfo.R;
 
+import java.io.File;
 import java.lang.ref.WeakReference;
 
 import static com.idpskuinfo.skuinfo.data.SkuDataService.PREPARATION_MESSAGE;
@@ -64,6 +65,12 @@ public class LoadActivity extends AppCompatActivity implements HandlerCallback {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+
+        File file_sku = new File(getFilesDir().toString(), "skumaster.txt");
+        file_sku.delete();
+        File file_rate = new File(getFilesDir().toString(), "skurate.txt");
+        file_rate.delete();
+
         unbindService(mServiceConnection);
     }
 
