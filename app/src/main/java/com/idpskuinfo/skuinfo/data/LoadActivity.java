@@ -42,6 +42,7 @@ public class LoadActivity extends AppCompatActivity implements HandlerCallback {
     public static final int NUMBER_RESULT = 101;
     Messenger mBoundService;
     boolean mServiceBound;
+
     private final ServiceConnection mServiceConnection = new ServiceConnection() {
         @Override
         public void onServiceDisconnected(ComponentName name) {

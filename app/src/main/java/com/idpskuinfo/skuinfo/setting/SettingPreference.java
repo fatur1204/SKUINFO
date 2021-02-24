@@ -10,6 +10,7 @@ public class SettingPreference {
     private static final String PORT = "port";
     private static final String USERNAME = "username";
     private static final String PASSWORD = "password";
+    private static final String DATEUPDATE = "dateupdate";
 
     private final SharedPreferences preferences;
 
@@ -23,8 +24,10 @@ public class SettingPreference {
         editor.putString(PORT, value.Port);
         editor.putString(USERNAME, value.UserName);
         editor.putString(PASSWORD, value.Password);
+        editor.putString(DATEUPDATE, value.DateUpdate);
         editor.apply();
     }
+
 
     public SettingModel getSetting() {
         SettingModel model = new SettingModel();
@@ -32,6 +35,7 @@ public class SettingPreference {
         model.setPort(preferences.getString(PORT, ""));
         model.setUserName(preferences.getString(USERNAME, ""));
         model.setPassword(preferences.getString(PASSWORD, ""));
+        model.setDateUpdate(preferences.getString(DATEUPDATE, ""));
         return model;
     }
 }

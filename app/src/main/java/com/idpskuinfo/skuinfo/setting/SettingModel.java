@@ -8,16 +8,19 @@ public class SettingModel implements Parcelable {
     String Port;
     String UserName;
     String Password;
+    String DateUpdate;
 
     public SettingModel() {
 
     }
+
 
     protected SettingModel(Parcel in) {
         HostName = in.readString();
         Port = in.readString();
         UserName = in.readString();
         Password = in.readString();
+        DateUpdate = in.readString();
     }
 
     @Override
@@ -26,6 +29,7 @@ public class SettingModel implements Parcelable {
         dest.writeString(Port);
         dest.writeString(UserName);
         dest.writeString(Password);
+        dest.writeString(DateUpdate);
     }
 
     @Override
@@ -75,5 +79,13 @@ public class SettingModel implements Parcelable {
 
     public void setPassword(String password) {
         Password = password;
+    }
+
+    public String getDateUpdate() {
+        return DateUpdate;
+    }
+
+    public void setDateUpdate(String dateUpdate) {
+        DateUpdate = dateUpdate;
     }
 }

@@ -8,4 +8,8 @@
     <string name="last_update">Last Update</string>
     <string name="time_update">Time Update</string>
     <string name="setting">Setting</string>
+    <string name="msgbtnyes">Yes</string>
+    <string name="msgbtnno">No</string>
+    <string name="msgupdate">Data Already Update, do you want to update again? maybe data will be lost and replace with new data.</string>
+    <string name="msgtitle">Re-Update!</string>
 </resources>

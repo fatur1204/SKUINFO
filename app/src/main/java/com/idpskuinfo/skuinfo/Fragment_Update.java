@@ -3,8 +3,10 @@ package com.idpskuinfo.skuinfo;
 import android.Manifest;
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -16,17 +18,22 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.core.app.ActivityCompat;
 import androidx.fragment.app.Fragment;
 
 import com.idpskuinfo.skuinfo.data.LoadActivity;
 import com.idpskuinfo.skuinfo.db.CurrencyHelper;
 import com.idpskuinfo.skuinfo.db.SkuHelper;
+import com.idpskuinfo.skuinfo.db.UpdateHelper;
 import com.idpskuinfo.skuinfo.ftp.MyFTPClientFunctions;
 import com.idpskuinfo.skuinfo.setting.SettingModel;
 import com.idpskuinfo.skuinfo.setting.SettingPreference;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class Fragment_Update extends Fragment implements View.OnClickListener {
     private static final String TAG = Fragment_Update.class.getSimpleName();
@@ -35,10 +42,11 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
+    public static int RECORD_UPDATE = 0;
     Button btnupdate;
     ProgressDialog progressDialog;
     boolean bdata, bdatacurr = false;
-    private String hostname, port, username, password;
+    private String hostname, port, username, password, dateupdate;
     private TextView TxtHostName, TxtPort, TxtUserName, TxtPassword;
     private ProgressBar progressBar;
     private Boolean bSKUMASTER, bCURRENCY, bUPDATE_DATA, bCONNECTION = false;
@@ -48,7 +56,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
     private MyFTPClientFunctions ftpclient = null;
     private SkuHelper skuHelper;
     private CurrencyHelper currencyHelper;
-    public static int RECORD_UPDATE = 0;
+    private final int ALERT_DIALOG_DELETE = 101;
 
     public Fragment_Update() {
         // Required empty public constructor
@@ -104,7 +112,16 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             TxtLineLog.setText("");
             btnupdate.setEnabled(false);
             showExistingPreference();
-            new LoadTask().execute();
+
+            String TimeUpdate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+            Log.d(TAG, "time update : " + TimeUpdate + "-" + dateupdate);
+            if (TimeUpdate.trim().equals(dateupdate.trim())) {
+                //Toast.makeText(getContext(), "data already update", Toast.LENGTH_LONG).show();
+                showAlertDialog(ALERT_DIALOG_DELETE);
+            } else {
+                //Toast.makeText(getContext(), "update", Toast.LENGTH_LONG).show();
+                new LoadTask().execute();
+            }
         }
     }
 
@@ -118,6 +135,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
         port = settingModel.getPort().isEmpty() ? "" : settingModel.getPort();
         username = settingModel.getUserName().isEmpty() ? "" : settingModel.getUserName();
         password = settingModel.getPassword().isEmpty() ? "" : settingModel.getPassword();
+        dateupdate = settingModel.getDateUpdate().isEmpty() ? "" : settingModel.getDateUpdate();
 
         Log.d(TAG, "HOSTNAME: " + hostname);
         Log.d(TAG, "PORT: " + port);
@@ -128,6 +146,76 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
         TxtPort.setText(port);
         TxtUserName.setText(username);
         TxtPassword.setText(password);
+    }
+
+    private void showAlertDialog(int type) {
+        final boolean isDialogClose = type == ALERT_DIALOG_DELETE;
+        String dialogTitle, dialogMessage;
+
+        dialogMessage = getResources().getString(R.string.msgupdate);
+        dialogTitle = getResources().getString(R.string.msgtitle);
+
+        AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(getContext());
+
+        alertDialogBuilder.setTitle(dialogTitle);
+        alertDialogBuilder
+                .setMessage(dialogMessage)
+                .setCancelable(false)
+                .setPositiveButton(getResources().getString(R.string.msgbtnyes), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        new LoadTask().execute();
+                    }
+                })
+                .setNegativeButton(getResources().getString(R.string.msgbtnno), new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        btnupdate.setEnabled(true);
+                        dialog.cancel();
+                    }
+                });
+        AlertDialog alertDialog = alertDialogBuilder.create();
+        alertDialog.show();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        Log.d(TAG, "resultcode : " + resultCode);
+        Log.d(TAG, "requestcode : " + requestCode);
+
+        if (requestCode == 101) {
+            skuHelper = SkuHelper.getInstance(getContext());
+            skuHelper.open();
+            currencyHelper = CurrencyHelper.getInstance(getContext());
+            currencyHelper.open();
+
+            int totalcount = skuHelper.queryAll().getCount();
+            TxtLineLog.append("total sku update : " + totalcount + "\n");
+            int totalrate = currencyHelper.queryAll().getCount();
+            TxtLineLog.append("total rate update : " + totalrate + "\n");
+
+            int total_record = RECORD_UPDATE;
+            Log.d(TAG, "total : " + total_record);
+
+            if (totalcount != total_record) {
+                TxtLineLog.append("update data failed...");
+            } else {
+
+                String date = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+
+                saveSetting(date);
+                TxtLineLog.append("update data successfully...[finish]");
+            }
+
+            skuHelper.close();
+            currencyHelper.close();
+        }
+    }
+
+    private void saveSetting(String dateupdate) {
+        SettingPreference userPreference = new SettingPreference(getContext());
+        settingModel.setDateUpdate(dateupdate);
+        userPreference.setSetting(settingModel);
     }
 
     private class LoadTask extends AsyncTask<String, Integer, Boolean> {
@@ -209,39 +297,6 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                     Toast.makeText(getContext(), "File doesn't exists", Toast.LENGTH_LONG).show();
                 }
             }
-        }
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data)
-    {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        Log.d(TAG, "resultcode : "+resultCode);
-        Log.d(TAG, "requestcode : "+requestCode);
-
-        if(requestCode==101){
-            skuHelper = skuHelper.getInstance(getContext());
-            skuHelper.open();
-            currencyHelper = currencyHelper.getInstance(getContext());
-            currencyHelper.open();
-
-            int totalcount = skuHelper.queryAll().getCount();
-            TxtLineLog.append("total sku update : "+totalcount+"\n");
-            int totalrate = currencyHelper.queryAll().getCount();
-            TxtLineLog.append("total rate update : "+totalrate+"\n");
-
-            int total_record = RECORD_UPDATE;
-            Log.d(TAG, "total : "+total_record);
-
-            if(totalcount!=total_record){
-                TxtLineLog.append("update data failed...");
-            }else{
-                TxtLineLog.append("update data successfully...[finish]");
-            }
-
-            skuHelper.close();
-            currencyHelper.close();
         }
     }
 }
