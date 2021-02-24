@@ -4,13 +4,12 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="16dp"
-    android:background="#CD5747"
+    android:background="#C15461"
     tools:context=".MainActivity">
 
     <ProgressBar
         android:id="@+id/progress_bar"
         style="@android:style/Widget.ProgressBar.Horizontal"
-        android:progress="50"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
@@ -25,7 +24,7 @@
         android:layout_above="@id/progress_bar"
         android:layout_centerHorizontal="true"
         android:paddingBottom="16dp"
-        android:textSize="30dp"
+        android:textSize="20dp"
         android:textColor="@color/white"
-        android:text="Loading..." />
+        android:text="Update data on progress..." />
 </RelativeLayout>
