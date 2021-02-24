@@ -39,6 +39,7 @@ interface HandlerCallback {
 }
 
 public class LoadActivity extends AppCompatActivity implements HandlerCallback {
+    private static final String TAG = LoadActivity.class.getSimpleName();
     public static final int NUMBER_RESULT = 101;
     Messenger mBoundService;
     boolean mServiceBound;
@@ -130,7 +131,8 @@ public class LoadActivity extends AppCompatActivity implements HandlerCallback {
 
     @Override
     public void preparation() {
-        Toast.makeText(this, "Load Data start", Toast.LENGTH_LONG).show();
+        //Toast.makeText(this, "Load Data start", Toast.LENGTH_LONG).show();
+        Log.d(TAG, "Load Data Start");
     }
 
     @Override

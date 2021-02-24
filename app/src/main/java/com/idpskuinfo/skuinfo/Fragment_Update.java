@@ -6,7 +6,6 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
@@ -25,7 +24,6 @@ import androidx.fragment.app.Fragment;
 import com.idpskuinfo.skuinfo.data.LoadActivity;
 import com.idpskuinfo.skuinfo.db.CurrencyHelper;
 import com.idpskuinfo.skuinfo.db.SkuHelper;
-import com.idpskuinfo.skuinfo.db.UpdateHelper;
 import com.idpskuinfo.skuinfo.ftp.MyFTPClientFunctions;
 import com.idpskuinfo.skuinfo.setting.SettingModel;
 import com.idpskuinfo.skuinfo.setting.SettingPreference;
@@ -116,11 +114,14 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             String TimeUpdate = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
             Log.d(TAG, "time update : " + TimeUpdate + "-" + dateupdate);
             if (TimeUpdate.trim().equals(dateupdate.trim())) {
-                //Toast.makeText(getContext(), "data already update", Toast.LENGTH_LONG).show();
                 showAlertDialog(ALERT_DIALOG_DELETE);
             } else {
-                //Toast.makeText(getContext(), "update", Toast.LENGTH_LONG).show();
-                new LoadTask().execute();
+                if((hostname.length()<1) && (port.length()<1) && (username.length()<1) && (password.length()<1)){
+                    Toast.makeText(getContext(), "Please complete ftp description", Toast.LENGTH_LONG).show();
+                    btnupdate.setEnabled(true);
+                }else{
+                    new LoadTask().execute();
+                }
             }
         }
     }
