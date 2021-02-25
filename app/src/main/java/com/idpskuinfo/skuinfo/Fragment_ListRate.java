@@ -62,12 +62,6 @@ public class Fragment_ListRate extends Fragment implements LoadCurrencyCallback 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
 
-        /*if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
-            recyclerView.addItemDecoration(new SimpleDividerItemDecoration(
-                    getContext()
-            ));
-        }*/
-
         recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
                 DividerItemDecoration.VERTICAL));
 
