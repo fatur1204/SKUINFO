@@ -106,12 +106,17 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
         edtSkuCode.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if(keyCode==KeyEvent.KEYCODE_ENTER){
-                    showDataSku();
-                    return true;
-                }else{
-                    return false;
+                switch (keyCode){
+                    case KeyEvent.KEYCODE_ENTER:
+                        if(edtSkuCode.length() > 0 ){
+                            showDataSku();
+                        }else{
+                            edtSkuCode.requestFocus();
+                            edtSkuCode.selectAll();
+                        }
+                        return true;
                 }
+                return false;
             }
         });
     }
