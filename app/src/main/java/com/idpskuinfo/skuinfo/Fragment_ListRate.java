@@ -2,6 +2,7 @@ package com.idpskuinfo.skuinfo;
 
 import android.database.Cursor;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DividerItemDecoration;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -60,9 +62,14 @@ public class Fragment_ListRate extends Fragment implements LoadCurrencyCallback 
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
         recyclerView.setHasFixedSize(true);
 
-        recyclerView.addItemDecoration(new SimpleDividerItemDecoration(
-                getContext()
-        ));
+        /*if(Build.VERSION.SDK_INT > Build.VERSION_CODES.LOLLIPOP){
+            recyclerView.addItemDecoration(new SimpleDividerItemDecoration(
+                    getContext()
+            ));
+        }*/
+
+        recyclerView.addItemDecoration(new DividerItemDecoration(getContext(),
+                DividerItemDecoration.VERTICAL));
 
         adapter = new RateAdapter(getActivity());
         recyclerView.setAdapter(adapter);

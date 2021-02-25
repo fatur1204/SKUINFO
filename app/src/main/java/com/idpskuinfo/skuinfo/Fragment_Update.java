@@ -41,6 +41,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
     public static int RECORD_UPDATE = 0;
+    private final int ALERT_DIALOG_DELETE = 101;
     Button btnupdate;
     ProgressDialog progressDialog;
     boolean bdata, bdatacurr = false;
@@ -54,7 +55,6 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
     private MyFTPClientFunctions ftpclient = null;
     private SkuHelper skuHelper;
     private CurrencyHelper currencyHelper;
-    private final int ALERT_DIALOG_DELETE = 101;
 
     public Fragment_Update() {
         // Required empty public constructor
@@ -116,10 +116,10 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             if (TimeUpdate.trim().equals(dateupdate.trim())) {
                 showAlertDialog(ALERT_DIALOG_DELETE);
             } else {
-                if((hostname.length()<1) && (port.length()<1) && (username.length()<1) && (password.length()<1)){
+                if ((hostname.length() < 1) && (port.length() < 1) && (username.length() < 1) && (password.length() < 1)) {
                     Toast.makeText(getContext(), "Please complete ftp description", Toast.LENGTH_LONG).show();
                     btnupdate.setEnabled(true);
-                }else{
+                } else {
                     new LoadTask().execute();
                 }
             }
@@ -231,6 +231,9 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             progressDialog.show();*/
 
             progressDialog = ProgressDialog.show(getContext(), "Please Wait!", "Process Download...", false, false);
+            //progressBar.setVisibility(View.VISIBLE);
+
+
             File file_sku = new File(getContext().getFilesDir().toString(), "skumaster.txt");
             file_sku.delete();
             File file_rate = new File(getContext().getFilesDir().toString(), "skurate.txt");
@@ -252,7 +255,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             if (status == true) {
                 bCONNECTION = true;
                 Log.d(TAG, "Connection Success");
-                TxtLineLog.append("ftp status [connected]...\n");
+                publishProgress(1);
                 long sizesku = ftpclient.ftpPrintFilesListsize("/SKUINFO/skumaster.txt");
 
                 bdata = ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "SKUINFO/skumaster.txt", getContext().getFilesDir().toString() + "/skumaster.txt");
@@ -260,7 +263,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
 
             } else {
                 Log.d(TAG, "Connection failed");
-                TxtLineLog.append("Connection ftp failed...\n");
+                publishProgress(1);
                 ftpclient.ftpDisconnect();
             }
             return status;
@@ -270,12 +273,16 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
         protected void onProgressUpdate(Integer... values) {
             super.onProgressUpdate(values);
             progressDialog.setProgress(values[0]);
+            if (bCONNECTION) {
+                TxtLineLog.append("ftp status [connected]...\n");
+            } else {
+                TxtLineLog.append("Connection ftp failed...\n");
+            }
         }
 
 
         @Override
         protected void onPostExecute(Boolean result) {
-            progressBar.setVisibility(View.INVISIBLE);
             progressDialog.dismiss();
             Log.d(TAG + " onPostExecute", "" + result);
             btnupdate.setEnabled(true);
