@@ -58,11 +58,19 @@ public class RateAdapter extends RecyclerView.Adapter<RateAdapter.RateViewHolder
         imgdata = imgdata.toLowerCase();
         String uri = "@drawable/" + imgdata;
         int imageResource = activity.getResources().getIdentifier(uri, null, activity.getPackageName());
-        Drawable drawable = activity.getResources().getDrawable(imageResource);
-        Glide.with(holder.itemView.getContext())
-                .load(drawable)
-                .apply(new RequestOptions().override(55, 55))
-                .into(holder.imgrate);
+
+        if(imageResource == 0){
+            Glide.with(holder.itemView.getContext())
+                    .load(R.drawable.idr)
+                    .apply(new RequestOptions().override(55, 55))
+                    .into(holder.imgrate);
+        }else{
+            Drawable drawable = activity.getResources().getDrawable(imageResource);
+            Glide.with(holder.itemView.getContext())
+                    .load(drawable)
+                    .apply(new RequestOptions().override(55, 55))
+                    .into(holder.imgrate);
+        }
     }
 
     @Override
