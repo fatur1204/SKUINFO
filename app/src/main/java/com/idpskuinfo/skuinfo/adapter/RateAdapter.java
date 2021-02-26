@@ -61,7 +61,7 @@ public class RateAdapter extends RecyclerView.Adapter<RateAdapter.RateViewHolder
 
         if(imageResource == 0){
             Glide.with(holder.itemView.getContext())
-                    .load(R.drawable.idr)
+                    .load(R.drawable.rp)
                     .apply(new RequestOptions().override(55, 55))
                     .into(holder.imgrate);
         }else{
