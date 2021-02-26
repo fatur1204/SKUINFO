@@ -220,6 +220,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
     }
 
     private class LoadTask extends AsyncTask<String, Integer, Boolean> {
+        double sizesku =0;
 
         @Override
         protected void onPreExecute() {
@@ -256,7 +257,13 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 bCONNECTION = true;
                 Log.d(TAG, "Connection Success");
                 publishProgress(1);
-                long sizesku = ftpclient.ftpPrintFilesListsize("/SKUINFO/skumaster.txt");
+                try {
+                    sizesku = ftpclient.getFileSize("/SKUINFO/skumaster.txt");
+                    sizesku = sizesku + ftpclient.getFileSize("/SKUINFO/skurate.txt");
+                    sizesku = (sizesku/1024)/1000;
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
 
                 bdata = ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "SKUINFO/skumaster.txt", getContext().getFilesDir().toString() + "/skumaster.txt");
                 bdatacurr = ftpclient.ftpDownload(ftpclient.ftpGetCurrentWorkingDirectory() + "SKUINFO/skurate.txt", getContext().getFilesDir().toString() + "/skurate.txt");
@@ -291,12 +298,12 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 Toast.makeText(getContext(), "Connection ftp failed!", Toast.LENGTH_LONG).show();
             } else {
                 if ((bdata = true) && (bdatacurr = true)) {
-                    TxtLineLog.append("Download data sucessfully...\n");
+                    Log.d(TAG,"SIZE FILE : "+sizesku);
+                    TxtLineLog.append("Download file complete ["+String.format("%,.2f", sizesku)+"MB]...\n");
                     TxtLineLog.append("disconnect...\n");
                     ftpclient.ftpDisconnect();
 
                     Intent mIntent = new Intent(getContext(), LoadActivity.class);
-                    //startActivity(mIntent);
                     startActivityForResult(mIntent, LoadActivity.NUMBER_RESULT);
                 } else {
                     TxtLineLog.append("File doesn't exists...\n");

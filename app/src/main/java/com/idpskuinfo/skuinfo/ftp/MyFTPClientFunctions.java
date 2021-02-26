@@ -120,22 +120,16 @@ public class MyFTPClientFunctions {
         }
     }
 
-    public long ftpPrintFilesListsize(String dir_path) {
-        long fileList = 0;
-        long filesize = 0;
-        try {
-            FTPFile[] ftpFiles = mFTPClient.listFiles(dir_path);
-            int length = ftpFiles.length;
-            filesize = 0;
-            for (int i = 0; i < length; i++) {
-                filesize = ftpFiles[i].getSize();
-            }
-            return filesize;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return filesize;
+    public double getFileSize(String filePath) throws Exception {
+        long fileSize = 0;
+        FTPFile[] files = mFTPClient.listFiles(filePath);
+        if (files.length == 1 && files[0].isFile()) {
+            fileSize = files[0].getSize();
         }
+        Log.i("tag", "File size = " + fileSize/1024);
+        return fileSize;
     }
+
 
     // Method to create new directory:
 
