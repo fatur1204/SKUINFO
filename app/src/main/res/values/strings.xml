@@ -12,4 +12,5 @@
     <string name="msgbtnno">No</string>
     <string name="msgupdate">Data Already Update, do you want to update again? maybe data will be lost and replace with new data.</string>
     <string name="msgtitle">Re-Update!</string>
+    <string name="msg_update">Jika anda yakin akan melakukan proses update, maka data yang sebelumnya kemungkinan besar akan hilang dan akan diganti dengan data yang terbaru.</string>
 </resources>
