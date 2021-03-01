@@ -139,7 +139,20 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
     }
 
     private void showDataSku(){
-        Cursor cursor = skuHelper.queryById(String.valueOf(edtSkuCode.getText()));
+
+        //format skucode------------------------
+        Log.d(TAG, "Sku Code : "+edtSkuCode.getText().toString());
+        String skuUPC = edtSkuCode.getText().toString().replace("271","");
+        Log.d(TAG,"replace sku length : "+ skuUPC.length());
+        int leng_data = skuUPC.length();
+        leng_data = leng_data - 1;
+        Log.d(TAG,"replace sku length 2 : "+ leng_data+" skucode : "+skuUPC);
+        skuUPC = String.valueOf(Integer.parseInt(skuUPC.substring(0,leng_data)));
+        Log.d(TAG,"replace sku : "+ skuUPC);
+        //-------------------------------------------------
+
+
+        Cursor cursor = skuHelper.queryById(String.valueOf(skuUPC));
         Log.d(TAG, "counter : " + cursor.getCount());
         if (cursor.getCount() > 0) {
             if (cursor != null) {

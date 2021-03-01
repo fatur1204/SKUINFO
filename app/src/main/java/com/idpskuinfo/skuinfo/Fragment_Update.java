@@ -203,6 +203,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             } else {
 
                 String date = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
+                Log.d(TAG, "date_system: "+date);
 
                 saveSetting(date);
                 TxtLineLog.append("update data successfully...[finish]");
