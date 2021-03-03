@@ -188,9 +188,9 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
             edtSkuCode.requestFocus();
             edtSkuCode.selectAll();
 
-            TxtSkuNumber.setText("");
-            TxtSkuDescription.setText("");
-            TxtSkuRetail.setText("0");
+            TxtSkuNumber.setText("Sku Number");
+            TxtSkuDescription.setText("Sku Description");
+            TxtSkuRetail.setText(String.format("%,.0f", Float.valueOf("0")));
 
             Toast.makeText(getContext(), "Data Not Match!", Toast.LENGTH_LONG).show();
         }
