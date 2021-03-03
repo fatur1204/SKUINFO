@@ -139,16 +139,26 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
     }
 
     private void showDataSku(){
-
+        String skuUPC = "";
+        String formatSku = "";
+        formatSku  = edtSkuCode.getText().toString().substring(0,3);
         //format skucode------------------------
-        Log.d(TAG, "Sku Code : "+edtSkuCode.getText().toString());
-        String skuUPC = edtSkuCode.getText().toString().replace("271","");
-        Log.d(TAG,"replace sku length : "+ skuUPC.length());
-        int leng_data = skuUPC.length();
-        leng_data = leng_data - 1;
-        Log.d(TAG,"replace sku length 2 : "+ leng_data+" skucode : "+skuUPC);
-        skuUPC = String.valueOf(Integer.parseInt(skuUPC.substring(0,leng_data)));
-        Log.d(TAG,"replace sku : "+ skuUPC);
+        Log.d(TAG, "sku result : "+formatSku);
+
+        if(formatSku.trim().equals("271")){
+            Log.d(TAG, "Sku Code : "+edtSkuCode.getText().toString());
+            skuUPC = edtSkuCode.getText().toString().replace("271","");
+            Log.d(TAG,"replace sku length : "+ skuUPC.length());
+            int leng_data = skuUPC.length();
+            leng_data = leng_data - 1;
+            Log.d(TAG,"replace sku length 2 : "+ leng_data+" skucode : "+skuUPC);
+            skuUPC = String.valueOf(Integer.parseInt(skuUPC.substring(0,leng_data)));
+            Log.d(TAG,"replace sku : "+ skuUPC);
+        }else{
+            Log.d(TAG, "sku not 271 : "+edtSkuCode.getText().toString());
+            skuUPC = edtSkuCode.getText().toString();
+            Log.d(TAG, "Sku Scan: " +skuUPC);
+        }
         //-------------------------------------------------
 
 
@@ -177,6 +187,11 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
         } else {
             edtSkuCode.requestFocus();
             edtSkuCode.selectAll();
+
+            TxtSkuNumber.setText("");
+            TxtSkuDescription.setText("");
+            TxtSkuRetail.setText("0");
+
             Toast.makeText(getContext(), "Data Not Match!", Toast.LENGTH_LONG).show();
         }
     }
