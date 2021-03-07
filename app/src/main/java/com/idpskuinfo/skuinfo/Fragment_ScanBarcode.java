@@ -2,7 +2,10 @@ package com.idpskuinfo.skuinfo;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -29,6 +32,7 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
     TextView TxtSkuNumber, TxtSkuDescription, TxtSkuRetail;
     TextView TxtLastRate, TxtLastUpdate, TxtTimeUpdate;
     private String skuCode;
+    Drawable drawable = null;
     private static final String TAG = Fragment_ScanBarcode.class.getSimpleName();
 
     public Fragment_ScanBarcode() {
@@ -103,14 +107,26 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
         btnSearchData.setOnClickListener(this);
         btnClear.setOnClickListener(this);
 
+        if (edtSkuCode.length() < 1) {
+            btnSearchData.setText("Scan Barcode");
+            drawable = getContext().getResources().getDrawable(R.drawable.ic_scan);
+            drawable.setBounds(0, 0, 60, 60);
+            btnSearchData.setCompoundDrawables(drawable, null, null, null);
+        } else {
+            btnSearchData.setText("Search Data");
+            drawable = getContext().getResources().getDrawable(R.drawable.ic_search);
+            drawable.setBounds(0, 0, 60, 60);
+            btnSearchData.setCompoundDrawables(drawable, null, null, null);
+        }
+
         edtSkuCode.setOnKeyListener(new View.OnKeyListener() {
             @Override
             public boolean onKey(View v, int keyCode, KeyEvent event) {
-                switch (keyCode){
+                switch (keyCode) {
                     case KeyEvent.KEYCODE_ENTER:
-                        if(edtSkuCode.length() > 0 ){
+                        if (edtSkuCode.length() > 0) {
                             showDataSku();
-                        }else{
+                        } else {
                             edtSkuCode.requestFocus();
                             edtSkuCode.selectAll();
                         }
@@ -119,45 +135,78 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
                 return false;
             }
         });
+
+        edtSkuCode.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+                //before textchange.
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                Log.d(TAG, "Result change : " + edtSkuCode.getText().toString());
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                Log.d(TAG, "Result after change : " + edtSkuCode.getText().toString());
+
+                if (edtSkuCode.length() < 1) {
+                    btnSearchData.setText("Scan Barcode");
+                    drawable = getContext().getResources().getDrawable(R.drawable.ic_scan);
+                    drawable.setBounds(0, 0, 60, 60);
+                    btnSearchData.setCompoundDrawables(drawable, null, null, null);
+                } else {
+                    btnSearchData.setText("Search Data");
+                    drawable = getContext().getResources().getDrawable(R.drawable.ic_search);
+                    drawable.setBounds(0, 0, 60, 60);
+                    btnSearchData.setCompoundDrawables(drawable, null, null, null);
+                }
+            }
+        });
     }
 
     @Override
     public void onClick(View v) {
         if (v.getId() == R.id.btnsearch) {
             if (edtSkuCode.length() == 0) {
-                //edtSkuCode.requestFocus();
-                //edtSkuCode.setError("Upc/SKU Can't empty!");
                 Intent mIntent = new Intent(getContext(), ScannerActivity.class);
                 startActivityForResult(mIntent, ScannerActivity.EXTRA_DATA);
             } else {
-                showDataSku();
+                if (edtSkuCode.length() < 8) {
+                    Toast.makeText(getContext(), "The minimum length must be 8 characters", Toast.LENGTH_LONG).show();
+                    edtSkuCode.requestFocus();
+                    edtSkuCode.selectAll();
+                } else {
+                    showDataSku();
+                }
             }
-        }else if(v.getId() == R.id.btnclear){
+        } else if (v.getId() == R.id.btnclear) {
             edtSkuCode.setText("");
             edtSkuCode.requestFocus();
         }
     }
 
-    private void showDataSku(){
+    private void showDataSku() {
         String skuUPC = "";
         String formatSku = "";
-        formatSku  = edtSkuCode.getText().toString().substring(0,3);
+        formatSku = edtSkuCode.getText().toString().substring(0, 3);
         //format skucode------------------------
-        Log.d(TAG, "sku result : "+formatSku);
+        Log.d(TAG, "sku result : " + formatSku);
 
-        if(formatSku.trim().equals("271")){
-            Log.d(TAG, "Sku Code : "+edtSkuCode.getText().toString());
-            skuUPC = edtSkuCode.getText().toString().replace("271","");
-            Log.d(TAG,"replace sku length : "+ skuUPC.length());
+        if (formatSku.trim().equals("271")) {
+            Log.d(TAG, "Sku Code : " + edtSkuCode.getText().toString());
+            skuUPC = edtSkuCode.getText().toString().replace("271", "");
+            Log.d(TAG, "replace sku length : " + skuUPC.length());
             int leng_data = skuUPC.length();
             leng_data = leng_data - 1;
-            Log.d(TAG,"replace sku length 2 : "+ leng_data+" skucode : "+skuUPC);
-            skuUPC = String.valueOf(Integer.parseInt(skuUPC.substring(0,leng_data)));
-            Log.d(TAG,"replace sku : "+ skuUPC);
-        }else{
-            Log.d(TAG, "sku not 271 : "+edtSkuCode.getText().toString());
+            Log.d(TAG, "replace sku length 2 : " + leng_data + " skucode : " + skuUPC);
+            skuUPC = String.valueOf(Integer.parseInt(skuUPC.substring(0, leng_data)));
+            Log.d(TAG, "replace sku : " + skuUPC);
+        } else {
+            Log.d(TAG, "sku not 271 : " + edtSkuCode.getText().toString());
             skuUPC = edtSkuCode.getText().toString();
-            Log.d(TAG, "Sku Scan: " +skuUPC);
+            Log.d(TAG, "Sku Scan: " + skuUPC);
         }
         //-------------------------------------------------
 
@@ -200,11 +249,11 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         Log.d(TAG, "dataku : " + data);
 
-        if(data != null){
+        if (data != null) {
             String result = data.getStringExtra("RESULT");
             edtSkuCode.setText(result);
             showDataSku();
-        }else{
+        } else {
             super.onActivityResult(requestCode, resultCode, data);
         }
 

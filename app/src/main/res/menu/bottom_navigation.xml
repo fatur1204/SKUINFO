@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
         android:id="@+id/navigation_scan"
-        android:icon="@drawable/ic_scan"
+        android:icon="@drawable/ic_baseline_qr_code_scanner_24"
         android:color="#FFFFFF"
         android:tint="#FFFFFF"
         android:backgroundTint="#FFFFFF"
