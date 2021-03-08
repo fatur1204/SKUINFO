@@ -59,8 +59,12 @@ public class ScannerActivity extends AppCompatActivity implements View.OnClickLi
     @Override
     public void onPause() {
         super.onPause();
-        mScannerView.stopCameraPreview();
-        mScannerView.stopCamera();
+        if(mScannerView !=null){
+            Log.d(TAG, "camera release");
+            mScannerView.stopCameraPreview();
+            mScannerView.stopCamera();
+            mScannerView = null;
+        }
         Log.d(TAG, "onPause");
     }
 
