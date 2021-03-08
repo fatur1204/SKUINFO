@@ -125,7 +125,13 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
                 switch (keyCode) {
                     case KeyEvent.KEYCODE_ENTER:
                         if (edtSkuCode.length() > 0) {
-                            showDataSku();
+                            if (edtSkuCode.length() < 8) {
+                                Toast.makeText(getContext(), "The minimum length must be 8 digits", Toast.LENGTH_LONG).show();
+                                edtSkuCode.requestFocus();
+                                edtSkuCode.selectAll();
+                            } else {
+                                showDataSku();
+                            }
                         } else {
                             edtSkuCode.requestFocus();
                             edtSkuCode.selectAll();
@@ -174,7 +180,7 @@ public class Fragment_ScanBarcode extends Fragment implements View.OnClickListen
                 startActivityForResult(mIntent, ScannerActivity.EXTRA_DATA);
             } else {
                 if (edtSkuCode.length() < 8) {
-                    Toast.makeText(getContext(), "The minimum length must be 8 characters", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getContext(), "The minimum length must be 8 digits", Toast.LENGTH_LONG).show();
                     edtSkuCode.requestFocus();
                     edtSkuCode.selectAll();
                 } else {
