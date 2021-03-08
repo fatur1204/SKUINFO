@@ -25,7 +25,8 @@
         android:background="@android:color/transparent"
         android:outlineProvider="none"
         android:elevation="0dp"
-        app:elevation="0dp"/>
+        app:elevation="0dp"
+        app:borderWidth="0dp"/>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fabclose"
@@ -39,6 +40,7 @@
         app:backgroundTint="@android:color/transparent"
         app:elevation="0dp"
         app:fabSize="auto"
+        app:borderWidth="0dp"
         app:tint="@color/colorBg" />
 
     <TextView
