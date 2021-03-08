@@ -2,14 +2,12 @@ package com.idpskuinfo.skuinfo;
 
 import android.database.Cursor;
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.DividerItemDecoration;
@@ -87,7 +85,7 @@ public class Fragment_ListRate extends Fragment implements LoadCurrencyCallback 
         } else {
             adapter.setListRate(new ArrayList<RateInfo>());
             TxtNotfound.setVisibility(View.VISIBLE);
-            Toast.makeText(getContext(),"No data found!", Toast.LENGTH_LONG).show();
+            //Toast.makeText(getContext(),"No data found!", Toast.LENGTH_LONG).show();
         }
         currencyHelper.close();
     }
