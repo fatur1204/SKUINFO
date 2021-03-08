@@ -203,7 +203,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
             } else {
 
                 String date = new SimpleDateFormat("dd-MM-yyyy", Locale.getDefault()).format(new Date());
-                Log.d(TAG, "date_system: "+date);
+                Log.d(TAG, "date_system: " + date);
 
                 saveSetting(date);
                 TxtLineLog.append("update data successfully...[finish]");
@@ -221,20 +221,16 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
     }
 
     private class LoadTask extends AsyncTask<String, Integer, Boolean> {
-        double sizesku =0;
+        double sizesku = 0;
 
         @Override
         protected void onPreExecute() {
-            /*progressDialog = new ProgressDialog(getContext());
-            progressDialog.setMessage("File downloading ...");
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+            progressDialog = new ProgressDialog(getContext());
+            progressDialog.setTitle("Please Wait!");
+            progressDialog.setMessage("Process Download...");
+            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
             progressDialog.setCancelable(false);
-            progressDialog.setMax(100);
-            progressDialog.show();*/
-
-            progressDialog = ProgressDialog.show(getContext(), "Please Wait!", "Process Download...", false, false);
-            //progressBar.setVisibility(View.VISIBLE);
-
+            progressDialog.show();
 
             File file_sku = new File(getContext().getFilesDir().toString(), "skumaster.txt");
             file_sku.delete();
@@ -261,7 +257,7 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 try {
                     sizesku = ftpclient.getFileSize("/SKUINFO/skumaster.txt");
                     sizesku = sizesku + ftpclient.getFileSize("/SKUINFO/skurate.txt");
-                    sizesku = (sizesku/1024)/1000;
+                    sizesku = (sizesku / 1024) / 1000;
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -299,8 +295,8 @@ public class Fragment_Update extends Fragment implements View.OnClickListener {
                 Toast.makeText(getContext(), "Connection ftp failed!", Toast.LENGTH_LONG).show();
             } else {
                 if ((bdata = true) && (bdatacurr = true)) {
-                    Log.d(TAG,"SIZE FILE : "+sizesku);
-                    TxtLineLog.append("Download file complete ["+String.format("%,.2f", sizesku)+"MB]...\n");
+                    Log.d(TAG, "SIZE FILE : " + sizesku);
+                    TxtLineLog.append("Download file complete [" + String.format("%,.2f", sizesku) + "MB]...\n");
                     TxtLineLog.append("disconnect...\n");
                     ftpclient.ftpDisconnect();
 
