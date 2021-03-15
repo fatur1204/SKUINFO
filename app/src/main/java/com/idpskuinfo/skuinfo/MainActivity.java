@@ -67,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements BottomNavigationV
                 break;
 
             case R.id.navigation_update:
-                getSupportActionBar().setTitle("Update");
+                getSupportActionBar().setTitle("Update Data");
                 fragment = new Fragment_Update();
                 break;
         }
